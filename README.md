@@ -27,19 +27,19 @@ Original Project (FindMyFlipper):
 
 ## Installation and Setup
 
- 1. **Clone the Repository:**
+1. **Clone the Repository:**
 		
-	 - Clone the repository using:
+	- Clone the repository using:
 
 			git clone https://github.com/arxhsz/FindMyFlipper-GUI.git
 
-	 - Navigate into the project directory:
+	- Navigate into the project directory:
 	 
 			cd FindMyFlipper-GUI
 		 	
 2.  **Install Dependencies:**
 
-		 - Run the following command to install all Node.js dependencies:
+	- Run the following command to install all Node.js dependencies:
 
 				npm install
 
@@ -48,7 +48,7 @@ Original Project (FindMyFlipper):
 3.  **Install Bleak:**
 		 
 
-		 - to install bleak run the following command:
+	- to install bleak run the following command:
 
 				pip install bleak
 
