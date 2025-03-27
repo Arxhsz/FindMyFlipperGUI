@@ -1,3 +1,5 @@
+
+
 ![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/logo.png?raw=true)
 
 # FindMyFlipperGUI
@@ -11,7 +13,7 @@ FindMyFlipper GUI is an Electron‑based desktop graphical user interface ([**GU
 Original Project (FindMyFlipper):  
 [https://github.com/MatthewKuKanich/FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper)
 
-**_Note:_** This GUI uses your personal **_.keys_** file (which must include at least “Hashed adv key” and “Private key ([**Hex**](https://www.google.com/search?q=Hexadecimal&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zoPwVYfd4gbpiMM3wdSUhK9YgSzwA:1743098894028&ei=DpTlZ4fGAbn4wbkP1f232QE&ved=0ahUKEwiHhYyz7aqMAxU5fDABHdX-LRsQ4dUDCBA&uact=5&oq=Hexadecimal&gs_lp=Egxnd3Mtd2l6LXNlcnAiC0hleGFkZWNpbWFsMg0QABiABBixAxhDGIoFMg0QABiABBixAxhDGIoFMgoQABiABBhDGIoFMg0QABiABBixAxhDGIoFMhAQABiABBixAxhDGIMBGIoFMg0QABiABBixAxhDGIoFMggQABiABBixAzILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyCBAAGIAEGLEDSI4FUABYAHAAeAGQAQCYAWCgAWCqAQExuAEDyAEA-AEC-AEBmAIBoAJmmAMAkgcDMC4xoAfMBbIHAzAuMbgHZg&sclient=gws-wiz-serp)) only during the current session. The keys are not stored or exported.
+**_Note:_** This GUI uses your personal **_.keys_** file (which must include at least “Hashed adv key” and “Private key ([Hex](https://www.google.com/search?q=Hexadecimal&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zoPwVYfd4gbpiMM3wdSUhK9YgSzwA:1743098894028&ei=DpTlZ4fGAbn4wbkP1f232QE&ved=0ahUKEwiHhYyz7aqMAxU5fDABHdX-LRsQ4dUDCBA&uact=5&oq=Hexadecimal&gs_lp=Egxnd3Mtd2l6LXNlcnAiC0hleGFkZWNpbWFsMg0QABiABBixAxhDGIoFMg0QABiABBixAxhDGIoFMgoQABiABBhDGIoFMg0QABiABBixAxhDGIoFMhAQABiABBixAxhDGIMBGIoFMg0QABiABBixAxhDGIoFMggQABiABBixAzILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyCBAAGIAEGLEDSI4FUABYAHAAeAGQAQCYAWCgAWCqAQExuAEDyAEA-AEC-AEBmAIBoAJmmAMAkgcDMC4xoAfMBbIHAzAuMbgHZg&sclient=gws-wiz-serp)) only during the current session. The keys are not stored or exported.
 
 ## Requirements
 
@@ -41,7 +43,7 @@ Original Project (FindMyFlipper):
 
 	- Run the following command to install all Node.js dependencies:
 
-			npm install
+				npm install
 
 	
 
@@ -50,7 +52,7 @@ Original Project (FindMyFlipper):
 
 	- to install bleak run the following command:
 
-			pip install bleak
+				pip install bleak
 
  - **Initial Setup – Creating the Desktop Shortcut:**
 
@@ -187,3 +189,26 @@ This project is licensed under the MIT License.
 This GUI is built as a wrapper for the original FindMyFlipper project by MatthewKuKanich.  
 Original project: [https://github.com/MatthewKuKanich/FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper)  
 Developed by: [Arxhsz](https://github.com/Arxhsz)
+
+## Pictures
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Keys.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Logo_Splash.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Logs.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Map_Black.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Map_Satellite.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Map_White.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/NOT_FOUND.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Settings.png?raw=true)
+
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Splash_Screen.png?raw=true)
+
+
+
