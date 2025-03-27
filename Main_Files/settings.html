@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings</title>
+  <style>
+    /* Basic resets & layout */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1c1c1e;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      overflow: hidden; /* Hide scrollbars */
+    }
+
+    /* Custom title bar (no OS bar because frame: false in main.js) */
+    .titlebar {
+      -webkit-app-region: drag;
+      height: 40px;
+      background: #2c2c2e;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border-bottom: 1px solid #3a3a3c;
+      font-weight: 500;
+    }
+    .title-text {
+      font-size: 1rem;
+      flex: 1;
+      padding-left: 10px;
+    }
+
+    /* Container for the rest of the settings content */
+    #settingsContainer {
+      width: 100%;
+      height: calc(100% - 40px);
+      box-sizing: border-box;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 4px 0;
+    }
+
+    /* Read-only text fields */
+    input[type="text"] {
+      width: 80%;
+      padding: 6px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 4px;
+      margin-right: 10px;
+      /* Make them read-only so user can't type: */
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .pathRow {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    /* Circle button style (matching your main window) */
+    .uiverseBtn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: rgb(20, 20, 20);
+      border: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+      cursor: pointer;
+      transition-duration: 0.3s;
+      overflow: hidden;
+      position: relative;
+      margin-left: 8px;
+    }
+    .uiverseBtn .svgIcon {
+      width: 12px;
+      transition-duration: 0.3s;
+    }
+    .uiverseBtn .svgIcon path {
+      fill: white;
+    }
+    .uiverseBtn:hover {
+      width: 140px;
+      border-radius: 50px;
+      transition-duration: 0.3s;
+      background-color: #666; /* Gray hover color */
+      align-items: center;
+    }
+    .uiverseBtn:hover .svgIcon {
+      width: 50px;
+      transition-duration: 0.3s;
+      transform: translateY(60%);
+    }
+    .uiverseBtn::before {
+      position: absolute;
+      top: -20px;
+      color: white;
+      transition-duration: 0.3s;
+      font-size: 2px;
+      opacity: 0;
+    }
+    .uiverseBtn:hover::before {
+      font-size: 13px;
+      opacity: 1;
+      transform: translateY(30px);
+      transition-duration: 0.3s;
+    }
+
+    /* Unique hover text for each button */
+    #browseWebBtn.uiverseBtn::before {
+      content: "Browse";
+    }
+    #browseBatBtn.uiverseBtn::before {
+      content: "Browse";
+    }
+    #saveSettingsBtn.uiverseBtn::before {
+      content: "Save";
+    }
+    #cancelSettingsBtn.uiverseBtn::before {
+      content: "Cancel";
+    }
+
+    /* Container for Save/Cancel buttons at the bottom */
+    .buttonsRow {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Custom Title Bar -->
+  <div class="titlebar">
+    <div class="title-text">Settings</div>
+  </div>
+
+  <div id="settingsContainer">
+    <h2>Change Paths</h2>
+
+    <label for="settingsWebPath">Python Web Service Path:</label>
+    <div class="pathRow">
+      <input type="text" id="settingsWebPath" readonly />
+      <!-- Circle "Browse" button -->
+      <button id="browseWebBtn" class="uiverseBtn" type="button">
+        <!-- Example folder icon -->
+        <svg viewBox="0 0 512 512" class="svgIcon">
+          <path d="M505 442.7L405.3 343c28.4-34.9 45.7-79 
+            45.7-127C451 96.5 354.5 0 231 0S11 96.5 11 216s96.5 216 
+            220 216c48 0 92.1-17.3 127-45.7l99.7 99.7c4.7 4.7 10.9 7 
+            17 7s12.3-2.3 17-7c9.4-9.4 9.4-24.6 
+            0-34zM231 360c-79.5 0-144-64.5-144-144S151.5 
+            72 231 72s144 64.5 144 144-64.5 144-144 
+            144z"/>
+        </svg>
+      </button>
+    </div>
+
+    <label for="settingsBatPath">Activate Script Path (activate.bat):</label>
+    <div class="pathRow">
+      <input type="text" id="settingsBatPath" readonly />
+      <!-- Circle "Browse" button -->
+      <button id="browseBatBtn" class="uiverseBtn" type="button">
+        <!-- Example folder icon -->
+        <svg viewBox="0 0 512 512" class="svgIcon">
+          <path d="M505 442.7L405.3 343c28.4-34.9 45.7-79 
+            45.7-127C451 96.5 354.5 0 231 0S11 96.5 11 
+            216s96.5 216 220 216c48 0 92.1-17.3 127-45.7l99.7 
+            99.7c4.7 4.7 10.9 7 17 7s12.3-2.3 17-7c9.4-9.4 
+            9.4-24.6 0-34zM231 360c-79.5 0-144-64.5-144-144S151.5 
+            72 231 72s144 64.5 144 144-64.5 144-144 
+            144z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Save & Cancel fancy circle buttons -->
+    <div class="buttonsRow">
+      <button id="saveSettingsBtn" class="uiverseBtn" type="button">
+        <!-- Example icon: check -->
+        <svg viewBox="0 0 512 512" class="svgIcon">
+          <path d="M173.9 439.4c-7.8 7.8-20.5 
+            7.8-28.3 0l-166-166c-7.8-7.8-7.8-20.5 
+            0-28.3l28.3-28.3c7.8-7.8 20.5-7.8 
+            28.3 0L160 284.7l317.4-317.4c7.8-7.8 
+            20.5-7.8 28.3 0l28.3 28.3c7.8 
+            7.8 7.8 20.5 0 28.3L173.9 
+            439.4z"/>
+        </svg>
+      </button>
+
+      <button id="cancelSettingsBtn" class="uiverseBtn" type="button">
+        <!-- Example icon: X -->
+        <svg viewBox="0 0 352 512" class="svgIcon">
+          <path d="M242.7 256l100.3-100.3c12.3-12.3 
+            12.3-32.2 0-44.5l-22.2-22.2c-12.3-12.3-32.2-12.3-44.5 
+            0L176 189.3 75.7 89c-12.3-12.3-32.2-12.3-44.5 
+            0L9 111.2c-12.3 12.3-12.3 32.2 0 
+            44.5L109.3 256 9 356.3c-12.3 12.3-12.3 
+            32.2 0 44.5l22.2 22.2c12.3 12.3 
+            32.2 12.3 44.5 0L176 322.7l100.3 
+            100.3c12.3 12.3 32.2 12.3 44.5 
+            0l22.2-22.2c12.3-12.3 12.3-32.2 
+            0-44.5L242.7 256z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    // Main sends 'current-paths' once the window is loaded
+    ipcRenderer.on('current-paths', (event, data) => {
+      document.getElementById('settingsWebPath').value = data.webService || "";
+      document.getElementById('settingsBatPath').value = data.batPath || "";
+    });
+
+    // "Browse" for Web Service
+    document.getElementById('browseWebBtn').addEventListener('click', () => {
+      ipcRenderer.send('open-web-service-dialog');
+    });
+    // "Browse" for Activate Script
+    document.getElementById('browseBatBtn').addEventListener('click', () => {
+      ipcRenderer.send('open-activate-bat-dialog');
+    });
+
+    // If main returns selected paths
+    ipcRenderer.on('web-service-path-selected', (event, filePath) => {
+      if (filePath) {
+        document.getElementById('settingsWebPath').value = filePath;
+      }
+    });
+    ipcRenderer.on('activate-bat-path-selected', (event, filePath) => {
+      if (filePath) {
+        document.getElementById('settingsBatPath').value = filePath;
+      }
+    });
+
+    // Save => send 'save-settings' to main
+    document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+      const newWebPath = document.getElementById('settingsWebPath').value.trim();
+      const newBatPath = document.getElementById('settingsBatPath').value.trim();
+      ipcRenderer.send('save-settings', { webService: newWebPath, batPath: newBatPath });
+    });
+
+    // Cancel => just close the settings window
+    document.getElementById('cancelSettingsBtn').addEventListener('click', () => {
+      ipcRenderer.send('close-settings');
+    });
+  </script>
+</body>
+</html>
