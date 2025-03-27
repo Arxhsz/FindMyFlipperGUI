@@ -1,4 +1,4 @@
-
+![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/logo.png?raw=true)
 
 # FindMyFlipperGUI
 
