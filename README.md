@@ -20,7 +20,7 @@ FindMyFlipper GUI is an Electron‑based desktop graphical user interface ([**GU
 Original Project (FindMyFlipper):  
 [https://github.com/MatthewKuKanich/FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper)
 
-**_Note:_** This GUI uses your personal **_.keys_** file (which must include at least “Hashed adv key” and “Private key ([Hex](https://www.google.com/search?q=Hexadecimal&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zoPwVYfd4gbpiMM3wdSUhK9YgSzwA:1743098894028&ei=DpTlZ4fGAbn4wbkP1f232QE&ved=0ahUKEwiHhYyz7aqMAxU5fDABHdX-LRsQ4dUDCBA&uact=5&oq=Hexadecimal&gs_lp=Egxnd3Mtd2l6LXNlcnAiC0hleGFkZWNpbWFsMg0QABiABBixAxhDGIoFMg0QABiABBixAxhDGIoFMgoQABiABBhDGIoFMg0QABiABBixAxhDGIoFMhAQABiABBixAxhDGIMBGIoFMg0QABiABBixAxhDGIoFMggQABiABBixAzILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyCBAAGIAEGLEDSI4FUABYAHAAeAGQAQCYAWCgAWCqAQExuAEDyAEA-AEC-AEBmAIBoAJmmAMAkgcDMC4xoAfMBbIHAzAuMbgHZg&sclient=gws-wiz-serp)) only during the current session. The keys are not stored or exported.
+**_Note:_** This GUI uses your personal **_.keys_** file (which must include at least “Hashed adv key” and “Private key ([**Hex**](https://www.google.com/search?q=Hexadecimal&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zoPwVYfd4gbpiMM3wdSUhK9YgSzwA:1743098894028&ei=DpTlZ4fGAbn4wbkP1f232QE&ved=0ahUKEwiHhYyz7aqMAxU5fDABHdX-LRsQ4dUDCBA&uact=5&oq=Hexadecimal&gs_lp=Egxnd3Mtd2l6LXNlcnAiC0hleGFkZWNpbWFsMg0QABiABBixAxhDGIoFMg0QABiABBixAxhDGIoFMgoQABiABBhDGIoFMg0QABiABBixAxhDGIoFMhAQABiABBixAxhDGIMBGIoFMg0QABiABBixAxhDGIoFMggQABiABBixAzILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyCBAAGIAEGLEDSI4FUABYAHAAeAGQAQCYAWCgAWCqAQExuAEDyAEA-AEC-AEBmAIBoAJmmAMAkgcDMC4xoAfMBbIHAzAuMbgHZg&sclient=gws-wiz-serp)) only during the current session. The keys are not stored or exported.
 
 # ❗❗IMPORTANT❗❗
 
