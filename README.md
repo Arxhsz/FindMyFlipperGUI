@@ -113,9 +113,9 @@ These paths are saved in a file called `Paths.txt` in the project folder for sub
     
 	 -   Here you can change:
     
-	    -   The Python Web Service path.
+	  -   The Python Web Service path.
         
-	    -   The activation script (activate.bat) path.
+	  -   The activation script (activate.bat) path.
         
 	 -   After you click “Save,” the new paths are written to `Paths.txt` and the app will automatically relaunch to apply the changes.
     
