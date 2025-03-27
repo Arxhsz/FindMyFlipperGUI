@@ -1,3 +1,5 @@
+# THIS IS A CUSTOM FILE PUT THIS IN THE AirTagGeneration FOLDER DELETE THIS FOLDER AFTER
+
 #!/usr/bin/env python3
 import argparse
 import base64
