@@ -4,7 +4,7 @@
 
 
 <video width="320" height="240" controls>
-  <source src="path/to/your-video.mp4" type="video/mp4">
+  <source src="[path/to/your-video.mp4](https://github.com/Arxhsz/FindMyFlipperGUI/blob/cefc09b06a75f2959fb6341e2de9652662140f63/FLIPPER.mp4)" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
