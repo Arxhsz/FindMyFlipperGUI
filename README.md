@@ -37,7 +37,7 @@ Original Project (FindMyFlipper):
 	 
 			cd FindMyFlipper-GUI
 		 	
-	 2.  **Install Dependencies:**
+2.  **Install Dependencies:**
 
 		 - Run the following command to install all Node.js dependencies:
 
@@ -45,7 +45,7 @@ Original Project (FindMyFlipper):
 
 	
 
-	 3.  **Install Bleak:**
+3.  **Install Bleak:**
 		 
 
 		 - to install bleak run the following command:
