@@ -25,7 +25,7 @@ Original Project (FindMyFlipper):
 
 • A working Bluetooth adapter on your PC
 
-• [Bleak](https://github.com/hbldh/bleak) 
+• [**Bleak**](https://github.com/hbldh/bleak) 
 
 ## Installation and Setup
 
