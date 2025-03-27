@@ -20,4 +20,4 @@ echo Launching application...
 call "%TARGET_BAT%"
 
 endlocal
-pause
+exit
