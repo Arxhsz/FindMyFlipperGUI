@@ -15,7 +15,7 @@ Original Project (FindMyFlipper):
 
 **_Note:_** This GUI uses your personal **_.keys_** file (which must include at least “Hashed adv key” and “Private key ([Hex](https://www.google.com/search?q=Hexadecimal&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zoPwVYfd4gbpiMM3wdSUhK9YgSzwA:1743098894028&ei=DpTlZ4fGAbn4wbkP1f232QE&ved=0ahUKEwiHhYyz7aqMAxU5fDABHdX-LRsQ4dUDCBA&uact=5&oq=Hexadecimal&gs_lp=Egxnd3Mtd2l6LXNlcnAiC0hleGFkZWNpbWFsMg0QABiABBixAxhDGIoFMg0QABiABBixAxhDGIoFMgoQABiABBhDGIoFMg0QABiABBixAxhDGIoFMhAQABiABBixAxhDGIMBGIoFMg0QABiABBixAxhDGIoFMggQABiABBixAzILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyCBAAGIAEGLEDSI4FUABYAHAAeAGQAQCYAWCgAWCqAQExuAEDyAEA-AEC-AEBmAIBoAJmmAMAkgcDMC4xoAfMBbIHAzAuMbgHZg&sclient=gws-wiz-serp)) only during the current session. The keys are not stored or exported.
 
-# IMPORTANT
+# ❗❗IMPORTANT❗❗
 
  - **YOU HAVE TO HAVE [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) ALREADY SETUP WITH YOUR FLIPPER WATCH [THIS](https://youtu.be/XGwHmwvQoqo?si=1iSAz6eImhk0Xhr2) FOR A TUTORIAL FOR HIS PROJECT. ONCE YOU HAVE EVRYTHING SETUP IN YOUR AirTagGeneration FOLDER YOU HAVE TO PUT MY CUSTOM web_service.py THIS FILE IS LOCATED IN MY FOLDER Web_Service_File IN MY REPO.**
 
