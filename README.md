@@ -41,7 +41,7 @@ Original Project (FindMyFlipper):
 
 	- Run the following command to install all Node.js dependencies:
 
-				npm install
+			npm install
 
 	
 
@@ -50,7 +50,7 @@ Original Project (FindMyFlipper):
 
 	- to install bleak run the following command:
 
-				pip install bleak
+			pip install bleak
 
  - **Initial Setup – Creating the Desktop Shortcut:**
 
