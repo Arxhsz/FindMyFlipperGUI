@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: #1c1c1e; color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none; overflow: hidden;
+    }
+    .titlebar {
+      -webkit-app-region: drag;
+      height: 40px; padding: 0 12px;
+      background: #2c2c2e; display: flex; align-items: center;
+      border-bottom: 1px solid #3a3a3c;
+    }
+    .title-text { flex: 1; font-size: 1rem; font-weight: 500; }
+    #settingsContainer {
+      display: flex; flex-direction: column; justify-content: space-between;
+      height: calc(100% - 40px); padding: 16px; box-sizing: border-box;
+    }
+    h2 { margin: 0 0 12px; font-size: 1.4rem; }
+    label { display: block; margin: 12px 0 4px; font-size: 0.95rem; }
+    .pathRow {
+      display: flex; align-items: center; margin-bottom: 8px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 6px 8px;
+      background: #333; border: 1px solid #444; border-radius: 4px;
+      color: #fff; font-size: 0.9rem;
+      pointer-events: none; opacity: 0.8;
+      margin-right: 12px;
+    }
+    .setting-item {
+      display: flex; align-items: center; gap: 8px;
+      margin: 16px 0; font-size: 0.95rem;
+    }
+    .buttonsRow {
+      display: flex; gap: 16px; margin-top: 16px;
+    }
+    .uiverseBtn {
+      position: relative; width: 50px; height: 50px;
+      border-radius: 50%; background: #141414; border: none;
+      box-shadow: 0 0 20px rgba(0,0,0,0.16);
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center; overflow: hidden;
+    }
+    .uiverseBtn .svgIcon { width:18px; height:18px; }
+    .uiverseBtn .svgIcon path { fill: #fff; }
+    .uiverseBtn:hover { background-color: #666; }
+    .uiverseBtn::after {
+      content: attr(data-hover);
+      position: absolute; top: -26px; left: 50%;
+      transform: translateX(-50%);
+      padding: 2px 6px; background: rgba(0,0,0,0.8);
+      color: #fff; font-size: 12px; border-radius: 4px;
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .uiverseBtn:hover::after { opacity: 1; }
+
+    .uiverse-toggle {
+      display: flex; align-items: center; gap: 6px;
+      cursor: pointer; user-select: none; position: relative;
+    }
+    .uiverse-toggle input {
+      position: absolute; opacity: 0; width: 0; height: 0;
+    }
+    .toggle-box {
+      width:24px; height:24px; background: #2c2c2e;
+      border:1px solid #444; border-radius:4px;
+      display:flex; align-items:center; justify-content:center;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .toggle-icon {
+      width:14px; height:14px; fill:#fff;
+      opacity:0; transform:scale(0.5);
+      transition:transform 0.2s, opacity 0.2s;
+    }
+    .uiverse-toggle input:checked + .toggle-box {
+      background:#fff; border-color:#fff;
+    }
+    .uiverse-toggle input:checked + .toggle-box .toggle-icon {
+      opacity:1; transform:scale(1);
+    }
+    .uiverse-toggle:hover .toggle-box { border-color:#666; }
+    .toggle-label { color:#ddd; transition:color 0.2s; }
+    .uiverse-toggle:hover .toggle-label { color:#fff; }
+  </style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="title-text">Settings</div>
+  </div>
+
+  <div id="settingsContainer">
+    <h2>Change Paths</h2>
+
+    <label for="settingsWebPath">Python Web Service Path:</label>
+    <div class="pathRow">
+      <input type="text" id="settingsWebPath" readonly />
+      <button id="browseWebBtn" class="uiverseBtn" data-hover="Browse">
+        <!-- folder/search icon SVG unchanged -->
+        <svg viewBox="0 0 512 512" class="svgIcon">
+          <path d="M505 442.7L405.3 343c28.4-34.9
+                   45.7-79 45.7-127C451 96.5
+                   354.5 0 231 0S11 96.5 11 216
+                   s96.5 216 220 216c48 0 92.1
+                   -17.3 127-45.7l99.7 99.7
+                   c4.7 4.7 10.9 7 17 7s12.3
+                   -2.3 17-7c9.4-9.4 9.4
+                   -24.6 0-34zM231 360c-79.5
+                   0-144-64.5-144-144S151.5
+                   72 231 72s144 64.5 144
+                   144-64.5 144-144 144z"/>
+        </svg>
+      </button>
+    </div>
+
+    <label for="settingsBatPath">Activate Script Path (activate.bat):</label>
+    <div class="pathRow">
+      <input type="text" id="settingsBatPath" readonly />
+      <button id="browseBatBtn" class="uiverseBtn" data-hover="Browse">
+        <svg viewBox="0 0 512 512" class="svgIcon">
+          <path d="M505 442.7L405.3 343c28.4-34.9
+                   45.7-79 45.7-127C451 96.5
+                   354.5 0 231 0S11 96.5 11 216
+                   s96.5 216 220 216c48 0 92.1
+                   -17.3 127-45.7l99.7 99.7
+                   c4.7 4.7 10.9 7 17 7s12.3
+                   -2.3 17-7c9.4-9.4 9.4
+                   -24.6 0-34zM231 360c-79.5
+                   0-144-64.5-144-144S151.5
+                   72 231 72s144 64.5 144
+                   144-64.5 144-144 144z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="setting-item">
+      <label class="uiverse-toggle">
+        <input type="checkbox" id="debugToggle"/>
+        <div class="toggle-box">
+          <svg viewBox="0 0 20 20" class="toggle-icon">
+            <path clip-rule="evenodd" fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0
+                 00-1.414 0L8 12.586 4.707
+                 9.293a1 1 0 10-1.414
+                 1.414l4 4a1 1 0 001.414
+                 0l8-8a1 1 0 000-1.414z"/>
+          </svg>
+        </div>
+        <span class="toggle-label">Open DevTools on launch</span>
+      </label>
+    </div>
+
+    <div class="buttonsRow">
+      <button id="saveSettingsBtn" class="uiverseBtn" data-hover="Save">
+        <!-- checkmark SVG unchanged -->
+        <svg viewBox="0 0 512 512" class="svgIcon">
+          <path d="M173.9 439.4c-7.8 7.8-20.5
+                   7.8-28.3 0l-166-166c-7.8-7.8
+                   -7.8-20.5 0-28.3l28.3-28.3
+                   c7.8-7.8 20.5-7.8 28.3 0L160
+                   284.7l317.4-317.4c7.8-7.8
+                   20.5-7.8 28.3 0l28.3
+                   28.3c7.8 7.8 7.8 20.5
+                   0 28.3L173.9 439.4z"/>
+        </svg>
+      </button>
+      <button id="cancelSettingsBtn" class="uiverseBtn" data-hover="Cancel">
+        <!-- X SVG unchanged -->
+        <svg viewBox="0 0 352 512" class="svgIcon">
+          <path d="M242.7 256l100.3-100.3c12.3
+                   -12.3 12.3-32.2 0-44.5l-22.2
+                   -22.2c-12.3-12.3-32.2-12.3
+                   -44.5 0L176 189.3 75.7
+                   89c-12.3-12.3-32.2-12.3
+                   -44.5 0L9 111.2c-12.3
+                   12.3-12.3 32.2 0 44.5L109.3
+                   256 9 356.3c-12.3 12.3
+                   -12.3 32.2 0 44.5l22.2
+                   22.2c12.3 12.3 32.2
+                   12.3 44.5 0L176 322.7
+                   l100.3 100.3c12.3 12.3
+                   32.2 12.3 44.5 0l22.2
+                   -22.2c12.3-12.3 12.3
+                   -32.2 0-44.5L242.7
+                   256z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    ipcRenderer.on('current-config', (_e, cfg) => {
+      document.getElementById('settingsWebPath').value  = cfg.webServicePath  || "";
+      document.getElementById('settingsBatPath').value  = cfg.activateBatPath || "";
+      document.getElementById('debugToggle').checked    = !!cfg.debugMode;
+    });
+
+    document.getElementById('browseWebBtn').onclick = () => {
+      ipcRenderer.send('open-web-service-dialog');
+    };
+    document.getElementById('browseBatBtn').onclick = () => {
+      ipcRenderer.send('open-activate-bat-dialog');
+    };
+    ipcRenderer.on('web-service-path-selected', (_e, p) => {
+      if (p) document.getElementById('settingsWebPath').value = p;
+    });
+    ipcRenderer.on('activate-bat-path-selected', (_e, p) => {
+      if (p) document.getElementById('settingsBatPath').value = p;
+    });
+
+    document.getElementById('saveSettingsBtn').onclick = () => {
+      const web = document.getElementById('settingsWebPath').value.trim();
+      const bat = document.getElementById('settingsBatPath').value.trim();
+      const dbg = document.getElementById('debugToggle').checked;
+      ipcRenderer.send('save-settings', {
+        webServicePath:  web,
+        activateBatPath: bat,
+        debugMode:       dbg
+      });
+    };
+    document.getElementById('cancelSettingsBtn').onclick = () => {
+      ipcRenderer.send('close-settings');
+    };
+  </script>
+</body>
+</html>

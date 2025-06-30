@@ -1,0 +1,278 @@
+/* STYLE CSS */
+
+html, body {
+  margin: 0; padding: 0; height: 100%;
+}
+
+body {
+  display: flex; flex-direction: column;
+  background-color: #1c1c1e; color: #fff;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Title bar */
+.titlebar {
+  -webkit-app-region: drag;
+  height: 40px; background: #353538;
+  display: flex; align-items: center;
+  padding: 0 10px; border-bottom: 1px solid #3a3a3c;
+}
+.title-text { font-size: 1rem; font-weight: 500; flex: 1; }
+.title-btn {
+  -webkit-app-region: no-drag; background: none;
+  border: none; color: #fff; width: 32px; height: 32px;
+  margin-left: 8px; border-radius: 4px; font-size: 1.2rem;
+  cursor: pointer; transition: background-color 0.15s;
+}
+.title-btn:hover { background-color: #3a3a3c; }
+
+/* Container */
+.container { display: flex; flex-direction: column; flex: 1; position: relative; }
+
+/* Controls bar */
+.controls {
+  background-color: #2c2c2e; padding: 10px;
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+.controls > div { margin: 10px; display: flex; align-items: center; }
+
+/* Default button style (exclude .uiverseBtn) */
+button:not(.uiverseBtn) {
+  background-color: #262729; border: none;
+  border-radius: 8px; padding: 8px 16px; font-size: 0.9rem;
+  color: #fff; cursor: pointer; margin-left: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  transition: background-color 0.15s;
+}
+button:not(.uiverseBtn):hover { background-color: #262729; }
+
+/* Map container */
+#map { flex: 1; background-color: #1c1c1e; }
+.leaflet-control-zoom { display: none !important; }
+
+/* Custom controls */
+.custom-controls {
+  position: absolute; right: 15px; bottom: 20px;
+  display: flex; flex-direction: column; gap: 8px; z-index: 9999;
+}
+.custom-controls button {
+  background-color: #2c2c2e; width:50px; height:50px;
+  border-radius:25px; font-size:1.2rem; color:#fff; border:1px solid #3a3a3c;
+  box-shadow:0 2px 4px rgba(0,0,0,0.5); transition: background-color 0.15s; margin:0;
+}
+.custom-controls button:hover { background-color: #3a3a3c; }
+
+/* Toggle buttons */
+.toggle-map-btn {
+  background-repeat: no-repeat; background-position:center;
+  background-size:60% auto; cursor:pointer;
+}
+
+/* Modal styling */
+.modal {
+  position: fixed; z-index: 9999; left:0; top:0;
+  width:100%; height:100%; overflow:hidden;
+  background: rgba(0,0,0,0.8);
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-content {
+  background-color:#2c2c2e; padding:20px; border-radius:8px;
+  text-align:center; width:400px;
+}
+.modal-content h2 { margin-top:0; }
+.modal-content input[type="file"] { margin:10px 0; }
+
+/* MAC input styling */
+#flipperMacInput {
+  background:#333; color:#fff; border:1px solid #444;
+  border-radius:4px; padding:6px;
+}
+
+/* Notification modal */
+#notificationModal h2 { font-size:1.2rem; }
+#notificationModal p { margin:15px 0; }
+.uiverse-modal-buttons {
+  display:flex; gap:12px; justify-content:center; margin-top:20px;
+}
+
+/* FileRow */
+.fileRow {
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; margin-top:10px;
+}
+
+/* Uiverse circular buttons */
+.uiverseBtn {
+  width:50px; height:50px; border-radius:50%;
+  background-color:rgb(20,20,20); border:none;
+  font-weight:600; display:flex; align-items:center;
+  justify-content:center; box-shadow:0 0 20px rgba(0,0,0,0.164);
+  cursor:pointer; transition-duration:0.3s; overflow:hidden; position:relative;
+  margin-left:8px;
+}
+.uiverseBtn .svgIcon { width:12px; transition-duration:0.3s; }
+.uiverseBtn .svgIcon path { fill:#fff; }
+.uiverseBtn:hover { width:140px; border-radius:50px; background-color:#666; }
+.uiverseBtn:hover .svgIcon { width:50px; transform:translateY(60%); }
+.uiverseBtn::before {
+  position:absolute; top:-20px; color:white; font-size:2px; opacity:0;
+  transition-duration:0.3s;
+}
+.uiverseBtn:hover::before {
+  font-size:13px; opacity:1; transform:translateY(30px); transition-duration:0.3s;
+}
+
+/* Uiverse-style dark toggle */
+.setting-item {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.uiverse-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.uiverse-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-box {
+  width: 32px;
+  height: 32px;
+  background: #2c2c2e;
+  border: 2px solid #444;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, border-color 0.3s;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+
+.toggle-icon {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.uiverse-toggle input:checked + .toggle-box {
+  background: #0a84ff;
+  border-color: #0a84ff;
+}
+.uiverse-toggle input:checked + .toggle-box .toggle-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.toggle-label {
+  color: #ddd;
+  transition: color 0.3s;
+}
+
+.uiverse-toggle:hover .toggle-box {
+  border-color: #666;
+}
+.uiverse-toggle:hover .toggle-label {
+  color: #fff;
+}
+
+/* Uiverse “Close/Minimize” buttons */
+.uiverseCloseBtn {
+  background-color: #141414;
+  position: relative;
+  width: 2.2em;
+  height: 2.2em;
+  margin-left: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uiverseCloseBtn .X,
+.uiverseCloseBtn .Y {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.1em;
+  height: 2px;
+  background-color: #fff !important;
+  transform-origin: center;
+}
+
+.uiverseCloseBtn .X {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.uiverseCloseBtn .Y {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.uiverseCloseBtn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.uiverseCloseBtn:active {
+  background-color: rgba(255, 255, 255, 0.30);
+}
+
+.uiverseCloseBtn::after {
+  content: attr(data-hover);
+  position: absolute;
+  bottom: -1.4em;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.70rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.uiverseCloseBtn:hover::after {
+  opacity: 1;
+  transition-delay: 0.3s;
+}
+
+/* Override for the Minimize (“–”) button */
+#mainMinimize .Y {
+  display: none !important;
+}
+#mainMinimize .X {
+  transform: translate(-50%, -50%) rotate(0deg) !important;
+}
+
+/* ———— NEW RULES ———— */
+
+/* 1) Hide the third (maximize/restore) button completely */
+#mainMaximize {
+  display: none !important;
+}
+
+/* 2) Suppress that little white bar from any button you mark noTooltip */
+button[noTooltip]::after {
+  display: none !important;
+}

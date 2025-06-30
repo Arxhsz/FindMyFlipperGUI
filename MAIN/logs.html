@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FindMyFlipper Logs</title>
+  <style>
+    body {
+      margin:0; padding:0;
+      font-family:monospace;
+      background:#111; color:#eee;
+    }
+    #log {
+      padding:8px;
+      white-space: pre-wrap;
+      font-size:13px;
+      overflow-y:auto;
+      height:100vh;
+      box-sizing:border-box;
+    }
+  </style>
+</head>
+<body>
+  <div id="log">Waiting for logs…</div>
+  <script>
+    const { ipcRenderer } = require('electron')
+    const logEl = document.getElementById('log')
+    ipcRenderer.on('log-line', (_e, line) => {
+      logEl.textContent += line + "\n"
+      logEl.scrollTop = logEl.scrollHeight
+    })
+  </script>
+</body>
+</html>

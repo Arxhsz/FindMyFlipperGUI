@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Splash Screen</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; width:100%; height:100%;
+      background-color: #1c1c1e; color:#fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-user-select: none; user-select: none; overflow:hidden;
+      transition: opacity 0.5s ease;
+    }
+    body.fadeOut { opacity:0; }
+    .titlebar {
+      -webkit-app-region: drag; height:40px; background:#2c2c2e;
+      display:flex; align-items:center; padding:0 10px; border-bottom:1px solid #3a3a3c;
+    }
+    .title-text { font-size:1rem; font-weight:500; flex:1; padding-left:10px; }
+
+    #logoOverlay {
+      position:absolute; top:40px; left:0; right:0; bottom:0;
+      display:flex; align-items:center; justify-content:center;
+      background:#1c1c1e; z-index:9999; opacity:1; transition:opacity 0.5s ease;
+    }
+    #logoImg {
+      width:150px; height:auto; opacity:0; transform:scale(0.5);
+      animation:logoIntro 1.2s ease forwards;
+    }
+    @keyframes logoIntro {
+      0% { transform:scale(0.5); opacity:0; }
+      60% { transform:scale(1.05); opacity:1; }
+      100% { transform:scale(1); opacity:1; }
+    }
+
+    #content {
+      display:none; width:100%; height:calc(100%-40px);
+      box-sizing:border-box; position:relative;
+      display:flex; justify-content:center; align-items:center;
+    }
+    .form-container {
+      width:100%; max-width:600px; margin:0 auto;
+      display:flex; flex-direction:column; align-items:center;
+      text-align:center; padding:20px;
+    }
+    h1 { margin:0 0 10px 0; }
+    p { margin:0 0 20px 0; line-height:1.4; max-width:500px; }
+    .pathRow {
+      display:flex; justify-content:center; align-items:center;
+      gap:10px; margin-top:10px; width:100%;
+    }
+    label { font-size:1rem; margin-top:15px; width:100%; text-align:center; }
+    input[type="text"] {
+      width:350px; padding:6px 10px;
+      border:1px solid #444; border-radius:4px;
+      background:#333; color:#fff; height:36px;
+    }
+    .browseBtn {
+      width:50px; height:50px; border-radius:50%; background:rgb(20,20,20);
+      border:none; font-weight:600; display:flex; align-items:center;
+      justify-content:center; box-shadow:0 0 20px rgba(0,0,0,0.164);
+      cursor:pointer; transition-duration:0.3s; overflow:hidden; position:relative;
+    }
+    .svgIcon { width:12px; transition-duration:0.3s; }
+    .svgIcon path { fill:white; }
+    .browseBtn:hover {
+      width:140px; border-radius:50px; transition-duration:0.3s;
+      background-color:#666; align-items:center;
+    }
+    .browseBtn:hover .svgIcon {
+      width:50px; transform:translateY(60%); transition-duration:0.3s;
+    }
+    .browseBtn::before {
+      position:absolute; top:-20px; content:"Browse"; color:white;
+      font-size:2px; opacity:0; transition-duration:0.3s;
+    }
+    .browseBtn:hover::before {
+      font-size:13px; opacity:1; transform:translateY(30px);
+    }
+    .fancy-continue {
+      --black-700: hsla(0,0%,12%,1);
+      --border_radius:9999px;
+      --transtion:0.3s ease-in-out;
+      --offset:2px;
+      cursor:pointer; position:relative; display:flex;
+      align-items:center; justify-content:center; gap:0.5rem;
+      transform-origin:center; padding:1rem 2rem;
+      background:transparent; border:none;
+      border-radius:var(--border_radius);
+      transform:scale(calc(1 + (var(--active,0)*0.1)));
+      transition:transform var(--transtion); margin-top:2rem;
+    }
+    .fancy-continue::before {
+      content:""; position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%); width:100%; height:100%;
+      background:var(--black-700); border-radius:var(--border_radius);
+      box-shadow:
+        inset 0 0.5px hsl(0,0%,100%),
+        inset 0 -1px 2px 0 hsl(0,0%,0%),
+        0px 4px 10px -4px hsla(0,0%,0%,calc(1-var(--active,0))),
+        0 0 0 calc(var(--active,0)*0.375rem) #444;
+      transition:all var(--transtion); z-index:0;
+    }
+    .fancy-continue::after {
+      content:""; position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%); width:100%; height:100%;
+      background:#666; opacity:var(--active,0);
+      border-radius:var(--border_radius);
+      transition:opacity var(--transtion); z-index:2;
+    }
+    .fancy-continue:is(:hover,:focus-visible) { --active:1; }
+    .fancy-continue:active { transform:scale(1); }
+    .dots_border {
+      --size_border:calc(100%+2px);
+      overflow:hidden; position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%); width:var(--size_border);
+      height:var(--size_border); background:transparent;
+      border-radius:var(--border_radius); z-index:-10;
+    }
+    .dots_border::before {
+      content:""; position:absolute; top:30%; left:50%;
+      transform:translate(-50%,-50%); transform-origin:left;
+      width:100%; height:2rem; background:white;
+      mask:linear-gradient(transparent 0%,white 120%);
+      animation:rotate 2s linear infinite;
+    }
+    @keyframes rotate { to { transform:rotate(360deg); } }
+    .text_button { position:relative; z-index:10; font-size:1rem; color:#fff; }
+  </style>
+</head>
+<body>
+  <div class="titlebar">
+    <div class="title-text">FindMyFlipper</div>
+  </div>
+
+  <div id="logoOverlay">
+    <img id="logoImg" src="icons/logo.png" alt="Logo" />
+  </div>
+
+  <div id="content">
+    <div class="form-container">
+      <h1>Welcome to FindMyFlipper</h1>
+      <p>
+        Please import your <code>.keys</code> file and specify your Python Web Service file
+        and your Activate script (<code>activate.bat</code>).
+      </p>
+
+      <label for="pythonServicePath">Python Web Service Path:</label>
+      <div class="pathRow">
+        <input type="text" id="pythonServicePath" placeholder="Path Here" readonly />
+        <button class="browseBtn" id="browseServicePathBtn">
+          <svg viewBox="0 0 512 512" class="svgIcon">
+            <path d="M505 442.7L405.3 343c28.4-34.9 45.7-79
+                     45.7-127C451 96.5 354.5 0 231 0S11
+                     96.5 11 216s96.5 216 220 216c48 0
+                     92.1-17.3 127-45.7l99.7 99.7
+                     c4.7 4.7 10.9 7 17 7s12.3-2.3
+                     17-7c9.4-9.4 9.4-24.6 0-34zM231
+                     360c-79.5 0-144-64.5-144-144S151.5
+                     72 231 72s144 64.5 144 144-64.5
+                     144-144 144z"/>
+          </svg>
+        </button>
+      </div>
+
+      <label for="activateBatPath">Activate Script Path (activate.bat):</label>
+      <div class="pathRow">
+        <input type="text" id="activateBatPath" placeholder="Path Here" readonly />
+        <button class="browseBtn" id="browseActivateBatBtn">
+          <svg viewBox="0 0 512 512" class="svgIcon">
+            <path d="M505 442.7L405.3 343c28.4-34.9 45.7-79
+                     45.7-127C451 96.5 354.5 0 231 0S11
+                     96.5 11 216s96.5 216 220 216c48 0
+                     92.1-17.3 127-45.7l99.7 99.7
+                     c4.7 4.7 10.9 7 17 7s12.3-2.3
+                     17-7c9.4-9.4 9.4-24.6 0-34zM231
+                     360c-79.5 0-144-64.5-144-144S151.5
+                     72 231 72s144 64.5 144 144-64.5
+                     144-144 144z"/>
+          </svg>
+        </button>
+      </div>
+
+      <button id="continueBtn" class="fancy-continue">
+        <div class="dots_border"></div>
+        <span class="text_button">Continue</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    document.addEventListener('keydown', (e) => { if (e.key==='Tab') e.preventDefault(); });
+
+    setTimeout(() => {
+      document.getElementById('logoOverlay').style.opacity = 0;
+      setTimeout(() => {
+        document.getElementById('logoOverlay').style.display = "none";
+        const c = document.getElementById('content');
+        c.style.display = "flex"; c.style.opacity = 0; c.style.transition = "opacity 0.5s ease";
+        setTimeout(() => { c.style.opacity = 1; }, 50);
+      }, 500);
+    }, 1800);
+
+    document.getElementById('browseServicePathBtn').addEventListener('click', () => {
+      ipcRenderer.send('open-web-service-dialog');
+    });
+    document.getElementById('browseActivateBatBtn').addEventListener('click', () => {
+      ipcRenderer.send('open-activate-bat-dialog');
+    });
+    ipcRenderer.on('web-service-path-selected', (_e,p) => {
+      if (p) document.getElementById('pythonServicePath').value = p;
+    });
+    ipcRenderer.on('activate-bat-path-selected', (_e,p) => {
+      if (p) document.getElementById('activateBatPath').value = p;
+    });
+
+    let clicked = false;
+    document.getElementById('continueBtn').addEventListener('click', () => {
+      if (clicked) return;
+      clicked = true;
+      const py = document.getElementById('pythonServicePath').value.trim();
+      const bt = document.getElementById('activateBatPath').value.trim();
+      if (!py || !bt) {
+        alert("Please select both paths before continuing.");
+        clicked = false;
+        return;
+      }
+      ipcRenderer.send('set-web-service-path', py);
+      ipcRenderer.send('set-activate-bat-path', bt);
+      document.body.classList.add('fadeOut');
+      setTimeout(() => { ipcRenderer.send('splash-continue'); }, 500);
+    });
+  </script>
+</body>
+</html>

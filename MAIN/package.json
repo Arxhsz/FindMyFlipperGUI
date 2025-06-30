@@ -1,0 +1,52 @@
+{
+  "name": "findmyflippergui",
+  "version": "1.1.0",
+  "description": "FindMyFlipper a Flipper tracking application.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "author": "Arxhsz",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^37.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.findmyflippergui.app",
+    "productName": "FindMyFlipperGUI",
+    "files": [
+      "main.js",
+      "index.html",
+      "splash.html",
+      "renderer.js",
+      "style.css",
+      "logs.html",
+      "logsRenderer.js",
+      "settings.html",
+      "persistent_flipper.py",
+      "icons/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bin/ble_service.exe",
+        "to": "bin/ble_service.exe"
+      }
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icons/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icons/icon.icns"
+    },
+    "publish": null
+  }
+}
