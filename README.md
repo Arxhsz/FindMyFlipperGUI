@@ -43,8 +43,7 @@ FindMyFlipperGUI is a cross-platform desktop application built with Electron and
 
 # !!!IMPORTANT!!!
 
-This App is just a GUI wrapper for [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) and does NOT export any data or files on the installed computer it only saves the file paths to the config.json not the actual contents of the files the source code is there if you want to make sure for yourself other than that have fun and star the project
-
+This App is just a GUI wrapper for [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) that means you have to have FindMyFlipper already setup and working. Once it is working you will notice in the AirTagGeneration folder you see web_service.py you have to replace that file with the web_service.py given in this project this allows the app to comunicate with the orignal FindMyFlipper project. This app does not export or save any information it only saves the file paths and reads the informtion from the file its self the source code is open if you want to take a look dont forget to star!
 ## Requirements
 
 -   **Node.js** v14+ and **npm**
