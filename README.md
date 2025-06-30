@@ -1,5 +1,5 @@
 
-https://raw.githubusercontent.com/Arxhsz/FindMyFlipperGUI/refs/heads/main/IMG/logo.png
+![](https://raw.githubusercontent.com/Arxhsz/FindMyFlipperGUI/refs/heads/main/IMG/logo.png)
 
 https://github.com/user-attachments/assets/167dfd30-9c8a-419e-b7b9-515afcd3cb4b
 
@@ -40,6 +40,10 @@ FindMyFlipperGUI is a cross-platform desktop application built with Electron and
         
 
 ----------
+
+# !!!IMPORTANT!!!
+
+This App is just a GUI wrapper for [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) and does NOT export any data or files on the installed computer it only saves the file paths to the config.json not the actual contents of the files the source code is there if you want to make sure for yourself other than that have fun and star the project
 
 ## Requirements
 
