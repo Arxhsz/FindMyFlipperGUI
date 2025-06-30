@@ -1,4 +1,6 @@
 
+https://github.com/user-attachments/assets/167dfd30-9c8a-419e-b7b9-515afcd3cb4b
+
 # FindMyFlipperGUI
 
 FindMyFlipperGUI is a cross-platform desktop application built with Electron and Leaflet that makes it easy to locate and interact with your Flipper Zero device over Bluetooth Low Energy (BLE). It wraps the core functionality of the original [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) project in a polished graphical interface—no command line required.
