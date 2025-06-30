@@ -1,4 +1,6 @@
 
+https://raw.githubusercontent.com/Arxhsz/FindMyFlipperGUI/refs/heads/main/IMG/logo.png
+
 https://github.com/user-attachments/assets/167dfd30-9c8a-419e-b7b9-515afcd3cb4b
 
 # FindMyFlipperGUI
