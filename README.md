@@ -1,225 +1,175 @@
 
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/logo.png?raw=true)
-
-
-
-https://github.com/user-attachments/assets/167dfd30-9c8a-419e-b7b9-515afcd3cb4b
-
-
-
-
 # FindMyFlipperGUI
 
+FindMyFlipperGUI is a cross-platform desktop application built with Electron and Leaflet that makes it easy to locate and interact with your Flipper Zero device over Bluetooth Low Energy (BLE). It wraps the core functionality of the original [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) project in a polished graphical interface—no command line required.
 
+----------
 
-## Overview
+## Key Features
 
-FindMyFlipper GUI is an Electron‑based desktop graphical user interface ([**GUI**](https://www.google.com/search?q=gui&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zpwKvfmkzbbSBiYK1rDueO8gzns2Q:1743098531283&ei=o5LlZ-D-EMCRwbkPtfSXiAw&ved=0ahUKEwig3I-G7KqMAxXASDABHTX6BcEQ4dUDCBA&uact=5&oq=gui&gs_lp=Egxnd3Mtd2l6LXNlcnAiA2d1aTIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzIKEAAYsAMY1gQYRzINEAAYgAQYsAMYQxiKBTINEAAYgAQYsAMYQxiKBUi0C1CvC1ivC3ABeAGQAQCYAQCgAQCqAQC4AQPIAQD4AQGYAgGgAgmYAwCIBgGQBgqSBwExoAcAsgcAuAcA&sclient=gws-wiz-serp)) that serves as a wrapper for the original FindMyFlipper project by [MatthewKuKanich](https://github.com/MatthewKuKanich). This project provides an easy way to monitor your Flipper device’s location on a map, Activate the alert function on the flipper, view logs, and adjust configuration settings without using the command line.
+-   **Credential Management**  
+    Import your exported `.keys` file (must include `Hashed adv key` and `Private key (Hex)`) and enter your device’s BLE MAC address.
+    
+-   **Live Map & Status**  
+    Embedded Leaflet map with a custom “speech-bubble” marker showing:
+    
+    -   **Battery bar** (0–100% with red→green gradient)
+        
+    -   **Online/offline dot** (green if seen in the last 10 minutes, grey otherwise)
+        
+-   **Remote Alert**  
+    One-click **Play Alert** button rings your Flipper so you can find it.
+    
+-   **Live Logs Window**  
+    Frameless window streaming both Python decryption-service output and BLE helper diagnostics.
+    
+-   **Unified Configuration**  
+    All settings saved in a single `config.json` in your OS user-data folder. In-app Settings panel lets you adjust paths and toggle DevTools on launch.
+    
+-   **Error Handling & Retry**
+    
+    -   BLE scan retry button
+        
+    -   Fetch-failure banners instead of silent failures
+        
+    -   Play-alert cooldown (5 s) and custom search countdown modal (30 s)
+        
 
-Original Project (FindMyFlipper):  
-[https://github.com/MatthewKuKanich/FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper)
-
-**_Note:_** This GUI uses your personal **_.keys_** file (which must include at least “Hashed adv key” and “Private key ([**Hex**](https://www.google.com/search?q=Hexadecimal&sca_esv=466a80cf504a0fa5&sxsrf=AHTn8zoPwVYfd4gbpiMM3wdSUhK9YgSzwA:1743098894028&ei=DpTlZ4fGAbn4wbkP1f232QE&ved=0ahUKEwiHhYyz7aqMAxU5fDABHdX-LRsQ4dUDCBA&uact=5&oq=Hexadecimal&gs_lp=Egxnd3Mtd2l6LXNlcnAiC0hleGFkZWNpbWFsMg0QABiABBixAxhDGIoFMg0QABiABBixAxhDGIoFMgoQABiABBhDGIoFMg0QABiABBixAxhDGIoFMhAQABiABBixAxhDGIMBGIoFMg0QABiABBixAxhDGIoFMggQABiABBixAzILEAAYgAQYsQMYgwEyChAAGIAEGEMYigUyCBAAGIAEGLEDSI4FUABYAHAAeAGQAQCYAWCgAWCqAQExuAEDyAEA-AEC-AEBmAIBoAJmmAMAkgcDMC4xoAfMBbIHAzAuMbgHZg&sclient=gws-wiz-serp)) only during the current session. The keys are not stored or exported.
-
-# ❗❗IMPORTANT❗❗
-
- - **YOU HAVE TO HAVE [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) ALREADY SETUP WITH YOUR FLIPPER WATCH [THIS](https://youtu.be/XGwHmwvQoqo?si=1iSAz6eImhk0Xhr2) FOR A TUTORIAL FOR HIS PROJECT. ONCE YOU HAVE EVRYTHING SETUP IN YOUR AirTagGeneration FOLDER YOU HAVE TO PUT MY CUSTOM web_service.py THIS FILE IS LOCATED IN MY FOLDER Web_Service_File IN MY REPO.**
+----------
 
 ## Requirements
 
-• Node.js (v14 or later) and npm 
- 
-• Python (v3.7 or later) with the required modules for FindMyFlipper  
-
-• Windows 10/11 (***tested***)  
-
-• A working Bluetooth adapter on your PC
-
-• [**Bleak**](https://github.com/hbldh/bleak) 
-
-## Installation and Setup
-
-1. **Clone the Repository:**
-		
-	- Clone the repository using:
-
-			git clone https://github.com/arxhsz/FindMyFlipper-GUI.git
-
-	- Navigate into the project directory:
-	 
-			cd FindMyFlipper-GUI
-		 	
-2.  **Install Dependencies:**
-
-	- Run the following command to install all Node.js dependencies:
-
-			npm install
-
-	
-
-3.  **Install Bleak:**
-		 
-
-	- to install bleak run the following command:
-
-			pip install bleak
-
- - **Initial Setup – Creating the Desktop Shortcut:**
-
-	 - **First time use:**
-	  
-		 Run the `INSTALL.bat` file. This batch script will:
-		 -   Create a desktop shortcut for the app (shortcut points to `start_app.bat`).
+-   **Node.js** v14+ and **npm**
     
-		-   Use the icon file located in the `icons` folder (icon.ico).
+-   **Python** v3.7+
     
-		-   Once the shortcut is created, you can launch the app by double‑clicking the desktop shortcut.
+-   **Bleak** Python library (`pip install bleak`)
+    
+-   **Windows 10/11** (tested) or macOS/Linux
+    
+-   A working Bluetooth adapter
+    
 
- - **Running the App Manually:**
-	
+----------
 
-	 - If you prefer to run the app without using the desktop shortcut, simply run the `start_app.bat` file. This file launches the Electron application directly.
+## Installation & Setup
 
+To install and package **FindMyFlipperGUI**, follow these steps:
 
-# Configuration (First Run)
-When you run the application for the first time (via the splash screen), you will be prompted to:
+1.  **Clone the repository & install dependencies**
+    
+    ```
+    git clone https://github.com/Arxhsz/FindMyFlipperGUI.git
+    cd FindMyFlipperGUI
+    npm install
+    pip install bleak
+    ```
+    
+2.  **Package the application**
+    
+    ```
+    npm run dist
+    ```
+    
+3.  **Run the installer**
+    
+    Navigate to the `release/` folder and launch the platform-specific installer (e.g., `.exe` on Windows, `.dmg` on macOS). After installation, start the app from your system’s application menu or desktop shortcut.
+    
 
- - **Upload your .keys file:**
-		The file must be in “key: value” format and include at least:
-	 - `Hashed adv key` 
-	 	 
-	 - `Private key (Hex)`
-	 
-	 _Important:_ Your .keys file is used only during the session and is not stored or exported.
-	 
- - **Specify the path to your Python Web Service file (.py):**
-		This is the script that provides backend services.
- - **Specify the path to your activation script (activate.bat):**
-This script may be used to set up or activate your environment.
+## First‑Run Configuration
 
-These paths are saved in a file called `Paths.txt` in the project folder for subsequent launches.
+On first launch, you’ll see a splash screen prompting you to:
+
+-   **Upload your** `**.keys**` **file** (format: `key: value`) containing at least:
+    
+    -   `Hashed adv key`
+        
+    -   `Private key (Hex)`  
+        _This file is used only in the current session; it is not saved._
+        
+-   **Specify paths for:**
+    
+    -   Python backend script (`web_service.py`)
+        
+    -   Activation script (`activate.bat`)
+        
+
+These values are saved to `config.json` for subsequent launches.
+
+----------
 
 ## Usage
 
- - **Main Window Features:**
- 
-	  -   **Interactive Map:** Displays your Flipper’s last known location.
-    
-	-   **Play Alert Button:** Sends an alert command to the Flipper (with a 5‑second cooldown).
-    
-	-   **Add New Key Button:** Opens a modal to upload a new .keys file and enter your Flipper’s MAC address.
-    
-	-   **Open Logs Button:** Opens a log window that shows real‑time application logs.
-    
-	-   **Settings Button:** Opens a separate Settings window (see below).
+Once configured, the main window provides:
 
- - **Settings Window:**
- 
-	 -   Access the Settings window by clicking the “Settings” button.
+-   **Add Keys (+)**: Re-import credentials and MAC address
     
-	 -   Here you can change:
+-   **🔔 Play Alert**: Ring your Flipper (5 s cooldown)
     
-	  -   The Python Web Service path.
-        
-	  -   The activation script (activate.bat) path.
-        
-	 -   After you click “Save,” the new paths are written to `Paths.txt` and the app will automatically relaunch to apply the changes.
+-   **🔍 Retry Flipper**: Restart BLE scan
     
-	 -   If you click “Cancel,” the settings window will close without saving changes.
- 
+-   **⚙️ Settings**: Update paths or DevTools toggle
+    
+-   **📜 Logs**: View real‑time logs
+    
 
- - **Shortcuts & Batch Files:**
-	 -   **INSTALL.bat:**  
-    Use this file on first installation to create a desktop shortcut for launching the app.
-    
-	-   **start_app.bat:**  
-    Use this file to manually start the app without using the shortcut.
+The map shows your Flipper’s last-known GPS coordinates with the battery bar and status dot updating live.
+
+----------
 
 ## Packaging
 
-If you wish to distribute your app as a packaged installer or EXE, you can use **electron‑builder**. (Make sure all instances of the app are closed before packaging.)
+To build platform installers with **electron-builder**:
 
-***IMPORTANT*** - This app was not made to be packaged yet... so if you run into any errors they will not be solved until the app is made to be packaged.
+```
+npm run dist
+```
 
- - **To package the app, run:**
- 
-		npm run dist
+Output will appear in the `release/` folder. On Windows, an NSIS installer; on macOS, a DMG.
 
-_Tip:_ Run the packaging command from an Administrator Command Prompt if you encounter errors (such as locked resources or “Access is denied”).
+> **Note:** Packaging support is experimental. If you encounter permission or resource-lock errors, try running as administrator or ensure no app instances are open.
 
-## Troubleshooting Common Issues
- 1. **Flipper Marker Not Appearing on the Map:**
-	 - Delete your Path.txt file then restart the app by closing it and then opening it through the shortcut.
+----------
+
+## Troubleshooting
+
+1.  **Marker not appearing**
     
-	-   Ensure your .keys file is correctly formatted and includes the required keys.
+    -   Delete `config.json` from your user-data folder and restart.
+        
+    -   Verify your `.keys` file has the required entries.
+        
+2.  **Packaging errors**
     
- 2.  **Desktop Shortcut Not Created:**
-	
-	 - Double‑check that you ran `INSTALL.bat` from the correct folder
-	 
-	 - Ensure that all paths in the batch script are correct and that the icon file exists in the `icons` folder.
-
-3.  **Packaging or Startup Errors:**
-	-   Make sure no other instances of the app are running.
+    -   Close all running instances.
+        
+    -   Run packaging command in an elevated terminal.
+        
+3.  **Bluetooth issues**
     
-	-   Run the packaging command with elevated permissions (Run as Administrator).
-
- 4. **Bluetooth connection errors:**
-		
-	 - Retry the connection at least 2-3 times.
-	 
-	 - Verify your Bluetooth adapter is plugged and or working.
-	 - On your Flipper turn Bluetooth off and on while the app is searching for the connection with at least 25 sec left
-	 - Verify if Bluetooth is turned on either on computer and or Flipper
-
-## Additional Notes
-
--   **.keys File:**  
-    The application does not store or export your .keys file permanently. It is used only during the session to authenticate with the backend service.
-    
--   **Shortcut Creation:**  
-    The first run requires `INSTALL.bat` to create a desktop shortcut for ease of access. Subsequent runs can use the shortcut or `start_app.bat`.
+    -   Retry scan; toggle Bluetooth off/on on both PC and Flipper.
+        
 
 ## Contributing
-Contributions to improve or add new features are welcome. To contribute:
 
-1.  Fork the repository:  
-    [https://github.com/arxhsz/FindMyFlipperGUI](https://github.com/arxhsz/FindMyFlipperGUI)
+Contributions welcome! Please:
+
+1.  Fork the repo
     
-2.  Create a branch for your changes.
+2.  Create a feature branch
     
-3.  Submit a pull request with detailed explanations.
+3.  Submit a pull request
+    
+
+----------
 
 ## License
 
-This project is licensed under the MIT License.
+MIT © Arxhsz
+
+----------
 
 ## Acknowledgments
 
-This GUI is built as a wrapper for the original FindMyFlipper project by MatthewKuKanich.  
-Original project: [https://github.com/MatthewKuKanich/FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper)  
-Developed by: [Arxhsz](https://github.com/Arxhsz)
-
-## Pictures
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Keys.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Logo_Splash.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Logs.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Map_Black.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Map_Satellite.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Map_White.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/NOT_FOUND.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Settings.png?raw=true)
-
-![](https://github.com/Arxhsz/FindMyFlipperGUI/blob/main/Splash_Screen.png?raw=true)
-
-
-
+Built as a GUI wrapper for [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) by Matthew KuKanich.  
+Thanks to the BLEAK and Electron communities for their libraries.
