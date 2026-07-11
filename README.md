@@ -15,9 +15,9 @@ Windows users can keep using the existing Electron app. A refreshed Windows upda
 
 The native Mac app is a real macOS build, not an Electron wrapper. It uses SwiftUI, MapKit, CoreBluetooth, Keychain Services, local JSON persistence, a menu bar status item, and a bundled FastAPI backend for Find My report access.
 
-![Native Mac map screen](IMG/mac-map.svg)
+![Native Mac map screen](IMG/mac-map.png)
 
-![Native Mac dashboard](IMG/mac-dashboard.svg)
+![Native Mac dashboard](IMG/mac-dashboard.png)
 
 ### Mac Features
 

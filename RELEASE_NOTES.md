@@ -1,6 +1,6 @@
 # Release Notes
 
-## Native macOS Preview
+## Native macOS App
 
 This release adds the native macOS FindMyFlipper app while keeping the existing Electron and Windows files in place.
 
