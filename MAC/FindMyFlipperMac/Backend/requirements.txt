@@ -1,0 +1,15 @@
+requests
+urllib3
+cryptography
+pbkdf2
+srp
+fastapi
+uvicorn
+certifi
+paho-mqtt
+pycryptodome
+python-multipart
+pydantic
+httpx
+pytest
+pytest-asyncio

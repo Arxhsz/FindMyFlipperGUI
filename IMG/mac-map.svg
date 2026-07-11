@@ -1,0 +1,53 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="900" rx="28" fill="#F7F7F5"/>
+  <rect width="280" height="900" fill="#FFFFFF"/>
+  <circle cx="48" cy="42" r="10" fill="#C7C7C7"/>
+  <circle cx="78" cy="42" r="10" fill="#C7C7C7"/>
+  <circle cx="108" cy="42" r="10" fill="#C7C7C7"/>
+  <circle cx="48" cy="120" r="22" fill="#FF5A00"/>
+  <path d="M40 119L59 109L51 133L47 123L40 119Z" fill="white"/>
+  <text x="84" y="130" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#1F2328">FindMyFlipper</text>
+  <rect x="28" y="188" width="224" height="48" rx="10" fill="#FFF1E8"/>
+  <text x="82" y="219" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1F2328">Map</text>
+  <text x="82" y="286" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#6B7280">Dashboard</text>
+  <text x="82" y="352" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#6B7280">Reports</text>
+  <text x="82" y="418" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#6B7280">Flipper</text>
+  <rect x="0" y="690" width="280" height="1" fill="#E9E5DF"/>
+  <rect x="28" y="720" width="224" height="112" rx="14" fill="#FFFFFF" stroke="#E9E5DF"/>
+  <circle cx="48" cy="750" r="6" fill="#22C55E"/>
+  <text x="64" y="756" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1F2328">Flipper Connected</text>
+  <text x="48" y="790" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#6B7280">Battery</text>
+  <text x="48" y="812" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1F2328">80%</text>
+  <rect x="332" y="0" width="1108" height="900" fill="#506A87"/>
+  <rect x="332" y="0" width="1108" height="900" fill="url(#grid)" opacity=".28"/>
+  <rect x="605" y="86" width="282" height="54" rx="27" fill="#FFFFFF"/>
+  <text x="652" y="121" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="16" font-weight="800" fill="#1F2328">Demo Flipper</text>
+  <circle cx="802" cy="113" r="7" fill="#22C55E"/>
+  <text x="818" y="119" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#1F2328">Connected</text>
+  <rect x="913" y="86" width="304" height="54" rx="27" fill="#FFFFFF"/>
+  <text x="956" y="109" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#6B7280">Last seen 2 min ago</text>
+  <text x="945" y="130" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#1F2328">Demo City, United States</text>
+  <rect x="1244" y="86" width="146" height="54" rx="10" fill="#FF5A00"/>
+  <text x="1290" y="121" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="16" font-weight="800" fill="#FFFFFF">Play Alert</text>
+  <circle cx="864" cy="456" r="58" fill="#FF5A00" opacity=".25"/>
+  <circle cx="864" cy="456" r="34" fill="#FF5A00"/>
+  <path d="M846 456L863 447L880 456L873 471H853L846 456Z" fill="#FFFFFF"/>
+  <rect x="733" y="280" width="334" height="140" rx="16" fill="#FFFFFF"/>
+  <text x="765" y="322" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="22" font-weight="800" fill="#1F2328">Demo Flipper</text>
+  <text x="765" y="356" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#6B7280">Last seen 2 min ago</text>
+  <text x="765" y="382" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="800" fill="#1F2328">Demo City, United States</text>
+  <circle cx="774" cy="406" r="5" fill="#22C55E"/>
+  <text x="790" y="412" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#6B7280">Accuracy: High</text>
+  <rect x="354" y="804" width="428" height="54" rx="12" fill="#FFFFFF"/>
+  <rect x="368" y="814" width="58" height="34" rx="9" fill="#FF5A00"/>
+  <text x="386" y="837" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="14" font-weight="800" fill="#FFFFFF">Live</text>
+  <text x="478" y="837" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#6B7280">1H</text>
+  <text x="554" y="837" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#6B7280">6H</text>
+  <text x="630" y="837" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#6B7280">24H</text>
+  <text x="722" y="837" font-family="Inter, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#6B7280">7D</text>
+  <defs>
+    <pattern id="grid" width="90" height="90" patternUnits="userSpaceOnUse">
+      <path d="M90 0H0V90" stroke="#E9EEF7" stroke-width="12"/>
+    </pattern>
+  </defs>
+</svg>

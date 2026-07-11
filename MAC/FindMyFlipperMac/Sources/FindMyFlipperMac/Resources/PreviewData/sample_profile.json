@@ -1,0 +1,53 @@
+{
+  "profile": {
+    "id": "A1B2C3D4-0000-0000-0000-000000000001",
+    "displayName": "Flipper Zero",
+    "createdAt": "2024-03-10T00:00:00Z",
+    "updatedAt": "2024-03-10T12:00:00Z",
+    "findMyKeyID": "A1B2C3D4-0000-0000-0000-000000000002",
+    "bleDeviceID": "A1B2C3D4-0000-0000-0000-000000000003",
+    "generatedFindMyMac": "DE:AD:BE:EF:CA:FE",
+    "payloadPreview": "AQID...(truncated)",
+    "hashedAdvKeyPreview": "abc123...(truncated)",
+    "lastReport": {
+      "id": "report-001",
+      "timestamp": 1710028800,
+      "isoDateTime": "2024-03-10T08:00:00Z",
+      "lat": 37.3319,
+      "lon": -122.0300,
+      "confidence": 65,
+      "status": 0,
+      "source": "Find My Network",
+      "profileID": "A1B2C3D4-0000-0000-0000-000000000001"
+    },
+    "batteryLevel": 72,
+    "isBLEConnected": true,
+    "autoReconnect": true,
+    "refreshInterval": 15,
+    "isActive": true
+  },
+  "reports": [
+    {
+      "id": "report-001",
+      "timestamp": 1710028800,
+      "isoDateTime": "2024-03-10T08:00:00Z",
+      "lat": 37.3319,
+      "lon": -122.0300,
+      "confidence": 65,
+      "status": 0,
+      "source": "Find My Network",
+      "profileID": "A1B2C3D4-0000-0000-0000-000000000001"
+    },
+    {
+      "id": "report-002",
+      "timestamp": 1710025200,
+      "isoDateTime": "2024-03-10T07:00:00Z",
+      "lat": 37.3318,
+      "lon": -122.0301,
+      "confidence": 55,
+      "status": 0,
+      "source": "Find My Network",
+      "profileID": "A1B2C3D4-0000-0000-0000-000000000001"
+    }
+  ]
+}

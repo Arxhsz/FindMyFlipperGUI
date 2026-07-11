@@ -1,0 +1,46 @@
+# macOS and editor noise
+.DS_Store
+.swiftpm/
+.kiro/
+.vscode/
+.idea/
+
+# Swift Package Manager
+.build/
+DerivedData/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcuserstate
+FindMyFlipper.app/
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.pyc
+
+# Node / Electron
+node_modules/
+release/
+dist/
+out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local app/runtime data
+config.json
+logs/
+*.log
+*.keys
+*.key
+*.pem
+*.p12
+.env
+.env.*
+
+# Bundled vendor/runtime checkouts
+Backend/FindMyFlipperRepo/
+MAC/FindMyFlipperMac/Backend/FindMyFlipperRepo/
+MAC/FindMyFlipperMac/Backend/venv/
+MAC/FindMyFlipperMac/FindMyFlipper.app/

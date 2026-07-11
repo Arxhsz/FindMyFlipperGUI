@@ -1,0 +1,41 @@
+.DS_Store
+*.swp
+*.tmp
+
+# Swift Package Manager / Xcode
+.build/
+.swiftpm/
+DerivedData/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+*.xcuserdata/
+
+# Local app bundles and packaging output
+FindMyFlipper.app/
+*.app/
+*.dSYM/
+*.zip
+
+# Python backend environments and caches
+Backend/venv/
+Backend/.venv/
+Backend/**/__pycache__/
+Backend/**/*.pyc
+Backend/.pytest_cache/
+.pytest_cache/
+
+# Local upstream/reference checkouts
+Backend/FindMyFlipperRepo/
+
+# Local Kiro/Codex/editor state
+.kiro/
+.vscode/
+.idea/
+
+# Secrets and local runtime data
+*.keys
+.env
+.env.*
+auth.json
+reports_*.json

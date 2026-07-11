@@ -1,182 +1,133 @@
-
 ![](https://raw.githubusercontent.com/Arxhsz/FindMyFlipperGUI/refs/heads/main/IMG/logo.png)
-
-https://github.com/user-attachments/assets/167dfd30-9c8a-419e-b7b9-515afcd3cb4b
 
 # FindMyFlipperGUI
 
-FindMyFlipperGUI is a cross-platform desktop application built with Electron and Leaflet that makes it easy to locate and interact with your Flipper Zero device over Bluetooth Low Energy (BLE). It wraps the core functionality of the original [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) project in a polished graphical interface—no command line required.
+FindMyFlipperGUI helps you work with FindMyFlipper `.keys` files and your own Flipper Zero from a desktop interface.
 
-----------
+This repository now contains two app tracks:
 
-## Key Features
+- `MAIN/` and `WEB_SERVICE.PY/`: the original Electron-based desktop GUI, with the existing Windows files kept in place.
+- `MAC/FindMyFlipperMac/`: the new native macOS SwiftUI app with a bundled local Python backend.
 
--   **Credential Management**  
-    Import your exported `.keys` file (must include `Hashed adv key` and `Private key (Hex)`) and enter your device’s BLE MAC address.
-    
--   **Live Map & Status**  
-    Embedded Leaflet map with a custom “speech-bubble” marker showing:
-    
-    -   **Battery bar** (0–100% with red→green gradient)
-        
-    -   **Online/offline dot** (green if seen in the last 10 minutes, grey otherwise)
-        
--   **Remote Alert**  
-    One-click **Play Alert** button rings your Flipper so you can find it.
-    
--   **Live Logs Window**  
-    Frameless window streaming both Python decryption-service output and BLE helper diagnostics.
-    
--   **Unified Configuration**  
-    All settings saved in a single `config.json` in your OS user-data folder. In-app Settings panel lets you adjust paths and toggle DevTools on launch.
-    
--   **Error Handling & Retry**
-    
-    -   BLE scan retry button
-        
-    -   Fetch-failure banners instead of silent failures
-        
-    -   Play-alert cooldown (5 s) and custom search countdown modal (30 s)
-        
+Windows users can keep using the existing Electron app. A refreshed Windows update is coming soon.
 
-----------
+## Native macOS App
 
-# !!!IMPORTANT!!!
+The native Mac app is a real macOS build, not an Electron wrapper. It uses SwiftUI, MapKit, CoreBluetooth, Keychain Services, local JSON persistence, a menu bar status item, and a bundled FastAPI backend for Find My report access.
 
-This App is just a GUI wrapper for [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) that means you have to have FindMyFlipper already setup and working. Once it is working you will notice in the AirTagGeneration folder you see web_service.py you have to replace that file with the web_service.py given in this project this allows the app to comunicate with the orignal FindMyFlipper project. This app does not export or save any information it only saves the file paths and reads the informtion from the file its self the source code is open if you want to take a look dont forget to star!
-## Requirements
+![Native Mac map screen](IMG/mac-map.svg)
 
--   **Node.js** v14+ and **npm**
-    
--   **Python** v3.7+
-    
--   **Bleak** Python library (`pip install bleak`)
-    
--   **Windows 10/11** (tested) or macOS/Linux
-    
--   A working Bluetooth adapter
-    
+![Native Mac dashboard](IMG/mac-dashboard.svg)
 
-----------
+### Mac Features
 
-## Installation & Setup
+- Import a FindMyFlipper `.keys` file.
+- Store private key material in macOS Keychain.
+- Keep the generated Find My MAC separate from the CoreBluetooth device identifier.
+- Connect Apple Find My report access through the bundled local backend.
+- Scan nearby Bluetooth devices and save the selected Flipper CoreBluetooth identifier.
+- Reconnect to the saved Flipper where macOS allows it.
+- Show a map-first tracking screen with live, recent, and historical report views.
+- Show reports, dashboard, profiles, Flipper detail, diagnostics, settings, and menu bar status.
+- Copy generated or imported `.keys` files to the connected Flipper microSD folder at `/ext/apps_data/findmy`.
+- Replace old `.keys` copies after a new identity is generated.
+- Play the Flipper alert over supported Bluetooth characteristics.
+- Switch between Light, Dark, System, Sunset, Ocean, Forest, and Purple themes.
 
-To install and package **FindMyFlipperGUI**, follow these steps:
+### Mac Build Requirements
 
-1.  **Clone the repository & install dependencies**
-    
-    ```
-    git clone https://github.com/Arxhsz/FindMyFlipperGUI.git
-    cd FindMyFlipperGUI
-    npm install
-    pip install bleak
-    ```
-    
-2.  **Package the application**
-    
-    ```
-    npm run dist
-    ```
-    
-3.  **Run the installer**
-    
-    Navigate to the `release/` folder and launch the platform-specific installer (e.g., `.exe` on Windows, `.dmg` on macOS). After installation, start the app from your system’s application menu or desktop shortcut.
-    
+- macOS 14 or newer
+- Xcode command line tools
+- Swift 5.9 or newer
+- Python 3.11 or newer
 
-## First‑Run Configuration
+### Mac Setup
 
-On first launch, you’ll see a splash screen prompting you to:
+```bash
+cd MAC/FindMyFlipperMac
 
--   **Upload your** `**.keys**` **file** (format: `key: value`) containing at least:
-    
-    -   `Hashed adv key`
-        
-    -   `Private key (Hex)`  
-        _This file is used only in the current session; it is not saved._
-        
--   **Specify paths for:**
-    
-    -   Python backend script (`web_service.py`)
-        
-    -   Activation script (`activate.bat`)
-        
+cd Backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cd ..
 
-These values are saved to `config.json` for subsequent launches.
-
-----------
-
-## Usage
-
-Once configured, the main window provides:
-
--   **Add Keys (+)**: Re-import credentials and MAC address
-    
--   **🔔 Play Alert**: Ring your Flipper (5 s cooldown)
-    
--   **🔍 Retry Flipper**: Restart BLE scan
-    
--   **⚙️ Settings**: Update paths or DevTools toggle
-    
--   **📜 Logs**: View real‑time logs
-    
-
-The map shows your Flipper’s last-known GPS coordinates with the battery bar and status dot updating live.
-
-----------
-
-## Packaging
-
-To build platform installers with **electron-builder**:
-
+swift build
+./build_and_run.sh
 ```
+
+The Mac app starts the local backend automatically when launched. You can also run the backend directly:
+
+```bash
+cd MAC/FindMyFlipperMac/Backend
+source venv/bin/activate
+python -m findmy_gateway.server
+```
+
+The backend health endpoint is:
+
+```text
+http://127.0.0.1:8765/health
+```
+
+## Existing Electron App
+
+The existing GUI remains in `MAIN/`. It is still useful for Windows users and for anyone who wants the original Electron workflow.
+
+### Electron Requirements
+
+- Node.js v14 or newer
+- npm
+- Python 3.7 or newer
+- Bleak Python library
+- A Bluetooth adapter
+- A working FindMyFlipper setup
+
+### Electron Setup
+
+```bash
+git clone https://github.com/Arxhsz/FindMyFlipperGUI.git
+cd FindMyFlipperGUI/MAIN
+npm install
+pip install bleak
 npm run dist
 ```
 
-Output will appear in the `release/` folder. On Windows, an NSIS installer; on macOS, a DMG.
+## Privacy and Safety
 
-> **Note:** Packaging support is experimental. If you encounter permission or resource-lock errors, try running as administrator or ensure no app instances are open.
+This project is for tracking only your own Flipper Zero and only `.keys` identities that you imported or generated yourself.
 
-----------
+- Do not use it to track unknown devices or other people.
+- The native Mac app stores private key material in macOS Keychain, not plaintext app config.
+- The native Mac app stores non-secret profile, settings, and report metadata locally on your Mac.
+- `.keys` generated MAC addresses and physical Bluetooth identifiers are different identities and are handled separately.
+- Do not commit real `.keys` files, Apple credentials, tokens, logs containing secrets, or local runtime folders.
 
-## Troubleshooting
+## Repository Layout
 
-1.  **Marker not appearing**
-    
-    -   Delete `config.json` from your user-data folder and restart.
-        
-    -   Verify your `.keys` file has the required entries.
-        
-2.  **Packaging errors**
-    
-    -   Close all running instances.
-        
-    -   Run packaging command in an elevated terminal.
-        
-3.  **Bluetooth issues**
-    
-    -   Retry scan; toggle Bluetooth off/on on both PC and Flipper.
-        
+```text
+FindMyFlipperGUI/
+├── MAIN/                         # Existing Electron app
+├── WEB_SERVICE.PY/               # Existing helper service integration
+├── MAC/
+│   └── FindMyFlipperMac/         # Native macOS SwiftUI app
+│       ├── Backend/              # Bundled FastAPI backend
+│       ├── Sources/              # SwiftUI app source
+│       ├── Tests/                # Swift and backend-facing tests
+│       ├── README.md             # Mac-specific setup docs
+│       └── THIRD_PARTY_NOTICES.md
+├── IMG/                          # Shared images and sanitized screenshots
+└── README.md
+```
 
-## Contributing
+## Credits
 
-Contributions welcome! Please:
+FindMyFlipperGUI is based on and compatible with the original [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) project by Matthew KuKanich.
 
-1.  Fork the repo
-    
-2.  Create a feature branch
-    
-3.  Submit a pull request
-    
+The native Mac backend includes original-compatible parsing, key-generation, auth, and report-handling integration boundaries so the Mac app can work without requiring users to manually run a separate checkout during onboarding.
 
-----------
+Additional thanks to the SwiftUI, MapKit, CoreBluetooth, FastAPI, Uvicorn, cryptography, Electron, Leaflet, and Bleak communities.
 
 ## License
 
 MIT © Arxhsz
-
-----------
-
-## Acknowledgments
-
-Built as a GUI wrapper for [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) by Matthew KuKanich.  
-Thanks to the BLEAK and Electron communities for their libraries.
