@@ -39,7 +39,7 @@ class Decryptor:
         lat, lon, confidence, status = self._decode_tag(decrypted)
         iso_dt = dt.datetime.fromtimestamp(timestamp, tz=dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        stable_id = report_id or str(uuid.uuid5(uuid.NAMESPACE_DNS, encrypted_blob_b64[:48]))
+        stable_id = report_id or str(uuid.uuid5(uuid.NAMESPACE_URL, encrypted_blob_b64))
         return LocationReportModel(
             id=stable_id,
             timestamp=float(timestamp),
@@ -72,7 +72,7 @@ class Decryptor:
         for i, report in enumerate(reports):
             try:
                 payload = report["payload"]
-                report_id = str(report.get("id") or uuid.uuid5(uuid.NAMESPACE_DNS, payload[:48]))
+                report_id = _stable_report_id(report)
                 results.append(self.decrypt_report(payload, private_key_b64, report_id=report_id))
             except Exception as exc:
                 logger.warning("Failed to decrypt report %d/%d: %s", i + 1, len(reports), exc)
@@ -121,3 +121,22 @@ class Decryptor:
         confidence = int.from_bytes(data[8:9], "big")
         status = int.from_bytes(data[9:10], "big")
         return latitude, longitude, confidence, status
+
+
+def _stable_report_id(report: dict) -> str:
+    """Create a local report identifier.
+
+    Apple's Find My fetch response uses the advertised key hash as ``id`` for
+    every result belonging to that key. That value is useful for filtering, but
+    it is not a report identity. Include the encrypted payload and any Apple
+    timestamp metadata so local storage can keep every unique ping while still
+    deduplicating repeated fetches deterministically.
+    """
+
+    identity_parts = [
+        str(report.get("id", "")),
+        str(report.get("datePublished", "")),
+        str(report.get("published", "")),
+        str(report.get("payload", "")),
+    ]
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, "|".join(identity_parts)))

@@ -17,6 +17,7 @@ This release adds the native macOS FindMyFlipper app while keeping the existing 
 - Seven visual themes with orange/white as the default.
 - Real sanitized Mac screenshots, theme screenshots, and updated setup documentation.
 - A sharper theme-colored macOS menu bar icon that uses the same Flipper glyph shape.
+- Report refresh now keeps every unique Find My ping instead of collapsing all reports for one key into a single local report.
 
 ### Notes
 
