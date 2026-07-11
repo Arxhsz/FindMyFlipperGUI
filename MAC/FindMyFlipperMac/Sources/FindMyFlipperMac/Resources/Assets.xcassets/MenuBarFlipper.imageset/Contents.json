@@ -1,19 +1,10 @@
 {
   "images" : [
     {
-      "filename" : "menubar-flipper.png",
+      "filename" : "menubar-flipper.pdf",
       "idiom" : "universal",
+      "preserves-vector-representation" : true,
       "scale" : "1x"
-    },
-    {
-      "filename" : "menubar-flipper@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "menubar-flipper@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
     }
   ],
   "info" : {

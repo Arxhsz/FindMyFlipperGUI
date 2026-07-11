@@ -34,6 +34,18 @@ The native Mac app is a real macOS build, not an Electron wrapper. It uses Swift
 - Play the Flipper alert over supported Bluetooth characteristics.
 - Switch between Light, Dark, System, Sunset, Ocean, Forest, and Purple themes.
 
+### Mac Themes
+
+The Mac app includes multiple full-app themes. These screenshots are captured from the running app with demo data only.
+
+| Light | Ocean | Forest |
+| --- | --- | --- |
+| ![Light theme](IMG/mac-theme-light.png) | ![Ocean theme](IMG/mac-theme-ocean.png) | ![Forest theme](IMG/mac-theme-forest.png) |
+
+| Sunset | Purple |
+| --- | --- |
+| ![Sunset theme](IMG/mac-theme-sunset.png) | ![Purple theme](IMG/mac-theme-purple.png) |
+
 ### Mac Build Requirements
 
 - macOS 14 or newer

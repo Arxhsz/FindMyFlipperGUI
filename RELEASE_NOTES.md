@@ -15,7 +15,8 @@ This release adds the native macOS FindMyFlipper app while keeping the existing 
 - Flipper microSD folder support for `/ext/apps_data/findmy`.
 - Generated key replacement flow that removes older copies after a verified replacement.
 - Seven visual themes with orange/white as the default.
-- Sanitized screenshots and updated setup documentation.
+- Real sanitized Mac screenshots, theme screenshots, and updated setup documentation.
+- A sharper theme-colored macOS menu bar icon that uses the same Flipper glyph shape.
 
 ### Notes
 

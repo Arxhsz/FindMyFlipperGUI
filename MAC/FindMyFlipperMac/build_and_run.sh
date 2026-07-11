@@ -78,15 +78,22 @@ rm -rf "$ICONSET_DIR"
 
 echo "Bundling Python backend..."
 rm -rf "$RESOURCES_DIR/Backend"
-# Dereference virtual-environment links so the signed app contains no absolute
-# symlinks back into a developer's Homebrew installation.
-rsync -aL \
+rsync -a \
   --exclude '__pycache__/' \
   --exclude '*.pyc' \
   --exclude '.pytest_cache/' \
   --exclude '.DS_Store' \
+  --exclude 'venv/' \
+  --exclude '.venv/' \
   --exclude 'FindMyFlipperRepo/' \
   Backend/ "$RESOURCES_DIR/Backend/"
+
+# Build a fresh bundle-local runtime instead of copying the developer venv.
+# Copying an existing venv can pull in absolute Homebrew/Python symlink trees
+# and make local packaging slow or non-portable.
+python3 -m venv --copies "$RESOURCES_DIR/Backend/venv"
+"$RESOURCES_DIR/Backend/venv/bin/python3" -m pip install --upgrade pip >/dev/null
+"$RESOURCES_DIR/Backend/venv/bin/python3" -m pip install -r "$RESOURCES_DIR/Backend/requirements.txt" >/dev/null
 
 # Create full Info.plist with all required keys for macOS to accept the bundle
 cat > "$CONTENTS_DIR/Info.plist" <<EOF
