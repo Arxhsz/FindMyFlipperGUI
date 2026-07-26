@@ -1,0 +1,40 @@
+name: Build macOS DMG
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build native app bundle
+        working-directory: MAC/FindMyFlipperMac
+        env:
+          FINDMYFLIPPER_SKIP_LAUNCH: "1"
+        run: ./build_and_run.sh
+
+      - name: Create disk image
+        working-directory: MAC/FindMyFlipperMac
+        run: |
+          mkdir -p dmg-root
+          cp -R FindMyFlipper.app dmg-root/
+          ln -s /Applications dmg-root/Applications
+          hdiutil create \
+            -volname FindMyFlipper \
+            -srcfolder dmg-root \
+            -ov \
+            -format UDZO \
+            FindMyFlipperMac.dmg
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: FindMyFlipperMac-dmg
+          path: MAC/FindMyFlipperMac/FindMyFlipperMac.dmg
+          if-no-files-found: error

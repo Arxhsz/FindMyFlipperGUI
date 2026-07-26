@@ -19,6 +19,22 @@ __pycache__/
 venv/
 *.pyc
 
+# Native Windows / MSBuild / packaging
+.vs/
+build/
+obj/
+Generated Files/
+packages/
+.venv-packaging/
+backend-build/
+backend-dist/
+*.pdb
+*.ilk
+*.tlog
+*.exp
+*.lib
+*.user
+
 # Node / Electron
 node_modules/
 release/
