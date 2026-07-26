@@ -41,14 +41,18 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DebugInformationFormat Condition="'$(Configuration)' == 'Release'">None</DebugInformationFormat>
+      <AdditionalOptions Condition="'$(Configuration)' == 'Debug'">/bigobj /FS %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)' == 'Release'">/bigobj /FS /experimental:deterministic /pathmap:"$(SolutionDir)=FindMyFlipperSource" %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
-      <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>$(OutDir)FindMyFlipperWindows.map</MapFileName>
+      <GenerateDebugInformation Condition="'$(Configuration)' == 'Release'">false</GenerateDebugInformation>
+      <GenerateMapFile Condition="'$(Configuration)' == 'Debug'">true</GenerateMapFile>
+      <GenerateMapFile Condition="'$(Configuration)' == 'Release'">false</GenerateMapFile>
+      <MapFileName Condition="'$(Configuration)' == 'Debug'">$(OutDir)FindMyFlipperWindows.map</MapFileName>
       <AdditionalOptions>/APPCONTAINER:NO %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>advapi32.lib;credui.lib;ole32.lib;user32.lib;winhttp.lib;shell32.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

@@ -10,13 +10,13 @@ FindMyFlipperGUI is a native desktop companion for locating your own Flipper Zer
 
 The Windows app is a native C++20/C++/WinRT and WinUI 3 application. It uses Windows Bluetooth LE APIs, Windows Credential Manager, Win32 notification-area APIs, Windows App SDK, and WebView2 only for its local Leaflet map. Python is bundled into two standalone executables; end users do not need Python, Visual Studio, Node.js, Electron, or Docker.
 
-![Native Windows map](IMG/windows-map.jpg)
+![Native Windows map](IMG/windows-map-v21-clean.jpg)
 
 | Dashboard | Reports |
 | --- | --- |
-| ![Windows dashboard](IMG/windows-dashboard.jpg) | ![Windows reports](IMG/windows-reports.jpg) |
+| ![Windows dashboard](IMG/windows-dashboard-v21-clean.jpg) | ![Windows reports](IMG/windows-reports-v21-clean.jpg) |
 
-![Windows onboarding](IMG/windows-onboarding.jpg)
+![Windows onboarding](IMG/windows-onboarding-v21-clean.jpg)
 
 The Windows screenshots were captured from the compiled native application in its isolated demo mode. All displayed names, identifiers, locations, and reports are fictional.
 
@@ -41,7 +41,7 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\packaging\package_windows.ps1 -Platform x64
 ```
 
-The current native source revision is `windows-native-build-fix-20`. Windows-specific implementation and QA notes are in [`WINDOWS/FindMyFlipperWindows`](WINDOWS/FindMyFlipperWindows).
+The current native source revision is `windows-native-build-fix-21`. Windows-specific implementation and QA notes are in [`WINDOWS/FindMyFlipperWindows`](WINDOWS/FindMyFlipperWindows).
 
 ## macOS app
 

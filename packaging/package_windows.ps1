@@ -148,21 +148,47 @@ Get-ChildItem -LiteralPath $AppRelease -Recurse -Directory -Filter "__pycache__"
 Get-ChildItem -LiteralPath $AppRelease -Recurse -File -Filter "*.pyc" |
     Remove-Item -Force
 
-# Symbols and link intermediates are retained in the build tree, not shipped
-# in the portable end-user package.
+# Symbols, maps, logs, browser profiles, and link intermediates are retained in
+# development locations, never shipped in the portable end-user package.
 Get-ChildItem $AppRelease -Recurse -File | Where-Object {
-    $_.Extension -in @(".pdb", ".obj", ".tlog", ".ilk", ".exp", ".lib")
+    $_.Extension -in @(".pdb", ".map", ".log", ".obj", ".tlog", ".ilk", ".exp", ".lib")
 } | Remove-Item -Force
+Get-ChildItem $AppRelease -Recurse -Directory | Where-Object {
+    $_.Name -like "*.WebView2" -or $_.Name -eq "EBWebView"
+} | Sort-Object FullName -Descending | Remove-Item -Recurse -Force
 
 $NativeExe = Join-Path $AppRelease "FindMyFlipperWindows.exe"
 $FinalExe = Join-Path $AppRelease "FindMyFlipper.exe"
 if (Test-Path $NativeExe) { Move-Item $NativeExe $FinalExe -Force }
+if (-not (Test-Path $FinalExe)) { throw "Release executable is missing: $FinalExe" }
+
+# C++ __FILE__ strings and linker debug records can silently disclose the
+# packager's profile or checkout path even when no PDB is shipped.
+$FinalExeText = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($FinalExe))
+@($Root, $env:USERPROFILE) | Where-Object { $_ } | ForEach-Object {
+    if ($FinalExeText.IndexOf($_, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        throw "Release executable contains a private local build path. Enable Release path mapping and rebuild."
+    }
+}
 
 # Unpackaged WinUI resolves the default PRI resource map from the executable
 # base name. Keep the PRI name aligned when the release executable is renamed.
 $NativePri = Join-Path $AppRelease "FindMyFlipperWindows.pri"
 $FinalPri = Join-Path $AppRelease "FindMyFlipper.pri"
 if (Test-Path $NativePri) { Move-Item $NativePri $FinalPri -Force }
+
+$ForbiddenReleaseFiles = Get-ChildItem $AppRelease -Recurse -File | Where-Object {
+    $_.Extension -in @(".keys", ".pdb", ".map", ".log", ".obj", ".tlog", ".ilk", ".exp", ".lib")
+}
+if ($ForbiddenReleaseFiles) {
+    throw "Release assembly contains forbidden private or development files: $($ForbiddenReleaseFiles.FullName -join ', ')"
+}
+$ForbiddenReleaseDirectories = Get-ChildItem $AppRelease -Recurse -Directory | Where-Object {
+    $_.Name -like "*.WebView2" -or $_.Name -eq "EBWebView" -or $_.Name -eq "__pycache__"
+}
+if ($ForbiddenReleaseDirectories) {
+    throw "Release assembly contains forbidden runtime or cache directories: $($ForbiddenReleaseDirectories.FullName -join ', ')"
+}
 
 $Zip = Join-Path $ReleaseRoot "FindMyFlipperPortable.zip"
 Compress-Archive -Path (Join-Path $AppRelease "*") -DestinationPath $Zip -CompressionLevel Optimal -Force
