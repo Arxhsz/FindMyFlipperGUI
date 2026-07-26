@@ -89,13 +89,14 @@ final class BackendManager: ObservableObject {
         proc.standardOutput = FileHandle.nullDevice
         proc.standardError = FileHandle.nullDevice
         proc.terminationHandler = { [weak self, weak proc] _ in
-            Task { @MainActor in
-                guard let self, let proc, self.process === proc else { return }
-                let shouldRestart = self.status == .running || self.status == .starting
-                self.process = nil
+            guard let manager = self, let terminatedProcess = proc else { return }
+            Task { @MainActor [manager, terminatedProcess] in
+                guard manager.process === terminatedProcess else { return }
+                let shouldRestart = manager.status == .running || manager.status == .starting
+                manager.process = nil
                 if shouldRestart {
-                    self.status = .stopped
-                    Task.detached(priority: .utility) { [backendManager = self] in
+                    manager.status = .stopped
+                    Task.detached(priority: .utility) { [backendManager = manager] in
                         await backendManager.startBackend()
                     }
                 }
