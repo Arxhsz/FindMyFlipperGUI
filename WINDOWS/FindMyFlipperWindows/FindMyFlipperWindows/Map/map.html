@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="leaflet.css">
+  <style>
+    :root{--accent:#ff5a00;--accent-soft:#ff5a0040;--card:#fff;--text:#1f2328;--muted:#6b7280;--border:#e9e5df}
+    *{box-sizing:border-box}html,body,#map{width:100%;height:100%;margin:0;font-family:"Segoe UI",sans-serif}body{overflow:hidden;background:#e8edf3}
+    button{font:inherit}.floating{position:absolute;z-index:900;background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:0 5px 18px #0002}
+    #timeline{left:16px;bottom:16px;display:flex;gap:4px;padding:6px;border-radius:13px;align-items:center}
+    #timeline button{height:34px;min-width:42px;padding:0 11px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:12px;font-weight:650;cursor:pointer}
+    #timeline button.active{background:var(--accent);color:#fff}#timeline .divider{height:18px;width:1px;background:var(--border);margin:0 2px}
+    #mapTools{position:absolute;right:18px;bottom:84px;width:48px;height:48px;z-index:920}
+    #toolPanel{display:none;position:absolute;right:0;bottom:57px;overflow:hidden;border-radius:13px}.tool{display:block;width:48px;height:46px;border:0;border-bottom:1px solid var(--border);background:var(--card);color:var(--text);font-size:20px;font-weight:650;cursor:pointer}.tool:hover{background:var(--accent-soft)}.tool:last-child{border:0}
+    #toolToggle{position:absolute;right:0;bottom:0;width:48px;height:48px;border-radius:13px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:20px;cursor:pointer;box-shadow:0 5px 18px #0003;display:grid;place-items:center}
+    .sliders{width:22px;height:18px;position:relative;background:linear-gradient(var(--text),var(--text)) 0 3px/22px 2px no-repeat,linear-gradient(var(--text),var(--text)) 0 9px/22px 2px no-repeat,linear-gradient(var(--text),var(--text)) 0 15px/22px 2px no-repeat}.sliders:after{content:"";position:absolute;width:5px;height:5px;border:2px solid var(--text);border-radius:50%;background:var(--card);left:5px;top:0;box-shadow:8px 6px 0 -2px var(--card),8px 6px 0 0 var(--text),-2px 12px 0 -2px var(--card),-2px 12px 0 0 var(--text)}
+    #styleMenu{display:none;position:absolute;right:54px;bottom:0;width:128px;border-radius:11px;overflow:hidden;padding:4px}
+    #styleMenu button{display:block;width:100%;padding:8px 10px;border:0;border-radius:7px;text-align:left;background:transparent;color:var(--text);cursor:pointer;font-size:12px}#styleMenu button:hover,#styleMenu button.active{background:var(--accent-soft)}
+    #reportActions{display:none}
+    #openMaps{right:18px;bottom:18px;border-radius:13px;padding:11px 16px;border:1px solid var(--border);font-weight:650;cursor:pointer;z-index:905}
+    #customPanel{display:none;left:16px;bottom:66px;width:310px;padding:14px;border-radius:12px}
+    #customPanel label{display:block;color:var(--muted);font-size:11px;margin:0 0 4px}#customPanel input{width:100%;margin:0 0 9px;padding:7px;border:1px solid var(--border);border-radius:7px;background:var(--card);color:var(--text)}
+    #customActions{display:flex;justify-content:flex-end;gap:7px}#customActions button{padding:7px 12px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}#customActions .primary{border-color:var(--accent);background:var(--accent);color:white}
+    .flipper-pin{width:56px;height:56px;position:relative;display:grid;place-items:center;filter:drop-shadow(0 4px 7px #0004)}
+    .flipper-glow{position:absolute;width:44px;height:44px;border-radius:50%;background:var(--accent-soft);animation:idle 1.5s ease-in-out infinite alternate}
+    .flipper-disc{position:absolute;width:40px;height:40px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent-soft)}
+    .flipper-device{position:absolute;width:32px;height:19px;background:#fff;border:1.5px solid #c7c7c3;clip-path:polygon(14% 2%,84% 2%,100% 50%,84% 98%,9% 98%,0 50%)}
+    .flipper-screen{position:absolute;left:17px;top:23px;width:11px;height:8px;border-radius:1px;background:#ff8c0f;border:1px solid #b83f00}.flipper-pad{position:absolute;left:31px;top:23px;width:8px;height:8px;border-radius:50%;background:#ff7800}
+    .marker-black .flipper-device{background:#1f2023;border-color:#58595e}.marker-black .flipper-screen{background:#ff7a00}.marker-black .flipper-pad{background:#ff9300}
+    .marker-transparent .flipper-device{background:#b8ddd7bb;border-color:#398f86}.marker-transparent .flipper-screen{background:#20c9b5}.marker-transparent .flipper-pad{background:#67e8d4}
+    .history-wrap{text-align:center}.history-dot{width:14px;height:14px;border:3px solid var(--card);border-radius:50%;background:var(--accent);box-shadow:0 2px 6px #0005;margin:auto}.history-time{margin-top:2px;padding:2px 4px;border-radius:6px;background:var(--card);color:var(--muted);font-size:9px;font-weight:650;white-space:nowrap}
+    .leaflet-tooltip.flipper-tooltip{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:0 8px 30px #0004;font-size:13px}.leaflet-tooltip-top.flipper-tooltip:before{border-top-color:var(--card)}
+    .pulse .flipper-disc{animation:alert .55s ease-out 4}#offline{display:none;position:absolute;inset:0;z-index:1000;align-items:center;justify-content:center;color:var(--text);background:#f7f7f5;text-align:center;padding:40px}
+    body.compact #timeline,body.compact #mapTools,body.compact #customPanel,body.compact #reportActions{display:none!important}body.compact .leaflet-control-attribution{font-size:9px}
+    @keyframes idle{to{transform:scale(1.35);opacity:.48}}@keyframes alert{to{transform:scale(2.2);opacity:0}}
+    @media(max-width:720px){#timeline{right:12px;left:12px;overflow-x:auto}#timeline button{min-width:38px;padding:0 8px}#mapTools{right:12px}.leaflet-control-attribution{font-size:9px}}
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="offline">Map tiles could not load. Check your internet connection, then reopen the map.</div>
+  <div id="timeline" class="floating" aria-label="Report time range">
+    <button data-filter="live" class="active">Live</button><button data-filter="1">1H</button><button data-filter="6">6H</button><button data-filter="24">24H</button><button data-filter="168">7D</button><button data-filter="720">30D</button><span class="divider"></span><button id="customButton" title="Custom timeline">&#x1F4C5;</button>
+  </div>
+  <div id="customPanel" class="floating"><label for="customStart">Start</label><input id="customStart" type="datetime-local"><label for="customEnd">End</label><input id="customEnd" type="datetime-local"><div id="customActions"><button id="last24">Last 24 Hours</button><button id="applyCustom" class="primary">Apply</button></div></div>
+  <div id="reportActions" class="floating"><button id="reportActionToggle" title="Report actions">&#x2026;</button><div id="reportActionMenu" class="floating"><button id="refreshReports">&#x21BB;&nbsp; Refresh Now</button><button id="openDiagnostics">&#x2699;&nbsp; Diagnostics</button></div></div>
+  <button id="openMaps" class="floating" title="Open the latest location in Windows Maps">Open in Maps&nbsp; &#x2197;</button>
+  <div id="mapTools">
+    <div id="toolPanel" class="floating"><button class="tool" id="locate" title="Go to current marker">&#x25CE;</button><button class="tool" id="zoomIn" title="Zoom in">+</button><button class="tool" id="zoomOut" title="Zoom out">&minus;</button><button class="tool" id="styles" title="Change map style">&#x25C8;</button></div>
+    <div id="styleMenu" class="floating"><button data-style="light">Light</button><button data-style="dark" class="active">Dark</button><button data-style="terrain">3D Terrain</button><button data-style="satellite">Satellite</button></div>
+    <button id="toolToggle" title="Map controls" aria-label="Map controls"><span class="sliders"></span></button>
+  </div>
+  <script src="leaflet.js"></script>
+  <script>
+    const compact=new URLSearchParams(location.search).get('compact')==='1';if(compact)document.body.classList.add('compact');
+    let map,reportLayer,liveMarker,tileLayer,currentAccent='#ff5a00',allReports=[],profileName='Flipper',activeFilter='live',customRange=null,currentStyle='dark',markerStyle='white';
+    const tiles={light:{url:'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',attribution:'&copy; OpenStreetMap &copy; CARTO'},dark:{url:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',attribution:'&copy; OpenStreetMap &copy; CARTO'},terrain:{url:'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',attribution:'&copy; OpenStreetMap &copy; OpenTopoMap',subdomains:'abc',maxNativeZoom:17,maxZoom:20},satellite:{url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',attribution:'Tiles &copy; Esri',subdomains:''}};
+    function markerHtml(){return '<div class="flipper-pin marker-'+markerStyle+'" id="live-flipper"><div class="flipper-glow"></div><div class="flipper-disc"></div><div class="flipper-device"></div><div class="flipper-screen"></div><div class="flipper-pad"></div></div>'}
+    try{map=L.map('map',{zoomControl:false,attributionControl:true}).setView([37.3319,-122.0300],14);reportLayer=L.layerGroup().addTo(map);setMapStyle('dark')}catch(e){document.getElementById('offline').style.display='flex'}
+    function setMapStyle(style){if(!map||!tiles[style])return;if(tileLayer)map.removeLayer(tileLayer);const t=tiles[style];tileLayer=L.tileLayer(t.url,{maxZoom:t.maxZoom||20,maxNativeZoom:t.maxNativeZoom||t.maxZoom||20,subdomains:t.subdomains===undefined?'abcd':t.subdomains,attribution:t.attribution}).addTo(map);tileLayer.bringToBack();currentStyle=style;document.querySelectorAll('[data-style]').forEach(b=>b.classList.toggle('active',b.dataset.style===style))}
+    function reportsForFilter(){const now=Date.now()/1000;if(customRange)return allReports.filter(r=>r.timestamp>=customRange.start&&r.timestamp<=customRange.end);const hours=activeFilter==='live'?1:Number(activeFilter);return allReports.filter(r=>!r.timestamp||r.timestamp>=now-hours*3600)}
+    function drawReports(focus=true){if(!map||!reportLayer)return;reportLayer.clearLayers();liveMarker=null;const reports=reportsForFilter();if(!reports.length)return;const newest=[...reports].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));const latest=newest[0];const oldest=[...newest].reverse();if(activeFilter!=='live'&&oldest.length>1)L.polyline(oldest.map(r=>[r.lat,r.lon]),{color:currentAccent,weight:4,opacity:.78,lineCap:'round',lineJoin:'round'}).addTo(reportLayer);if(activeFilter!=='live')oldest.slice(0,-1).forEach(r=>{const d=r.timestamp?new Date(r.timestamp*1000).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';L.marker([r.lat,r.lon],{icon:L.divIcon({className:'',html:'<div class="history-wrap"><div class="history-dot"></div><div class="history-time">'+escapeHtml(d)+'</div></div>',iconSize:[54,32],iconAnchor:[27,7]})}).addTo(reportLayer)});liveMarker=L.marker([latest.lat,latest.lon],{icon:L.divIcon({className:'',html:markerHtml(),iconSize:[56,56],iconAnchor:[28,28]})}).addTo(reportLayer);const seen=latest.timestamp?relativeTime(latest.timestamp):'Latest report';liveMarker.bindTooltip('<b>'+escapeHtml(profileName)+'</b><br>Last seen '+seen+'<br>Accuracy: '+latest.confidence+' m',{direction:'top',offset:[0,-28],className:'flipper-tooltip'});if(focus)focusVisible(reports)}
+    function focusVisible(reports=reportsForFilter()){if(!map||!reports.length)return;const pts=reports.map(r=>[r.lat,r.lon]);if(pts.length===1)map.setView(pts[0],16);else map.fitBounds(pts,{padding:[80,80],maxZoom:17})}
+    function setReports(reports,name){allReports=Array.isArray(reports)?reports:[];profileName=name||'Flipper';drawReports(true)}
+    function setFilter(filter){activeFilter=String(filter);customRange=null;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===activeFilter));document.getElementById('customButton').classList.remove('active');drawReports(true)}
+    function pulseMarker(){const marker=document.getElementById('live-flipper');if(!marker)return;marker.classList.remove('pulse');void marker.offsetWidth;marker.classList.add('pulse');setTimeout(()=>marker.classList.remove('pulse'),2400)}
+    function setAccent(accent){currentAccent=accent;document.documentElement.style.setProperty('--accent',accent);document.documentElement.style.setProperty('--accent-soft',accent+'40');drawReports(false)}
+    function setMarkerStyle(style){markerStyle=['white','black','transparent'].includes(style)?style:'white';drawReports(false)}
+    function setTheme(card,text,muted,border){const s=document.documentElement.style;s.setProperty('--card',card);s.setProperty('--text',text);s.setProperty('--muted',muted);s.setProperty('--border',border);drawReports(false)}
+    function relativeTime(ts){const age=Math.max(0,Date.now()/1000-ts);if(age<60)return'just now';if(age<3600)return Math.floor(age/60)+' min ago';if(age<86400)return Math.floor(age/3600)+' hrs ago';return Math.floor(age/86400)+' days ago'}
+    function escapeHtml(value){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+    document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>setFilter(b.dataset.filter));
+    document.getElementById('reportActionToggle').onclick=()=>{const m=document.getElementById('reportActionMenu');m.style.display=m.style.display==='block'?'none':'block'};document.getElementById('refreshReports').onclick=()=>{document.getElementById('reportActionMenu').style.display='none';window.chrome?.webview?.postMessage('refreshReports')};document.getElementById('openDiagnostics').onclick=()=>{document.getElementById('reportActionMenu').style.display='none';window.chrome?.webview?.postMessage('diagnostics')};
+    document.getElementById('toolToggle').onclick=()=>{const p=document.getElementById('toolPanel');const open=p.style.display==='block';p.style.display=open?'none':'block';document.getElementById('styleMenu').style.display='none';document.getElementById('toolToggle').innerHTML=open?'<span class="sliders"></span>':'&times;'};
+    document.getElementById('locate').onclick=()=>focusVisible(allReports.length?[reportsForFilter()[0]||allReports[0]]:[]);document.getElementById('zoomIn').onclick=()=>map&&map.zoomIn();document.getElementById('zoomOut').onclick=()=>map&&map.zoomOut();document.getElementById('styles').onclick=()=>{const m=document.getElementById('styleMenu');m.style.display=m.style.display==='block'?'none':'block'};document.querySelectorAll('[data-style]').forEach(b=>b.onclick=()=>{setMapStyle(b.dataset.style);document.getElementById('styleMenu').style.display='none'});
+    document.getElementById('openMaps').onclick=()=>{const r=reportsForFilter()[0]||allReports[0];if(r)window.chrome?.webview?.postMessage('openMaps:'+r.lat+','+r.lon)};
+    const custom=document.getElementById('customPanel');document.getElementById('customButton').onclick=()=>custom.style.display=custom.style.display==='block'?'none':'block';
+    function localInput(date){const d=new Date(date.getTime()-date.getTimezoneOffset()*60000);return d.toISOString().slice(0,16)}function setLast24(){const e=new Date(),s=new Date(e-86400000);document.getElementById('customStart').value=localInput(s);document.getElementById('customEnd').value=localInput(e)}setLast24();document.getElementById('last24').onclick=setLast24;document.getElementById('applyCustom').onclick=()=>{const s=new Date(document.getElementById('customStart').value).getTime()/1000,e=new Date(document.getElementById('customEnd').value).getTime()/1000;if(!Number.isFinite(s)||!Number.isFinite(e))return;customRange={start:Math.min(s,e),end:Math.max(s,e)};activeFilter='custom';document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));document.getElementById('customButton').classList.add('active');custom.style.display='none';drawReports(true)};
+  </script>
+</body>
+</html>

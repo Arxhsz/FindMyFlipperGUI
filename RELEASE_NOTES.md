@@ -1,31 +1,28 @@
-# Release Notes
+# Release notes
 
-## Native macOS App
+## Native Windows and macOS desktop release
 
-This release adds the native macOS FindMyFlipper app while keeping the existing Electron and Windows files in place.
+### Windows
 
-### Added
+- Replaced the legacy Electron Windows client with a native C++20, C++/WinRT, WinUI 3 application.
+- Added secure `.keys` import/generation and Credential Manager secret storage.
+- Added native BLE discovery, stable filtering, reconnect, battery, RSSI, firmware, physical Bluetooth MAC display, and repeatable alert playback.
+- Added USB Flipper import/copy and confirmation-protected firmware/microSD key inspection.
+- Added a local Leaflet map with live and historical timelines, custom ranges, marker focus, zoom, and four map modes.
+- Added dashboard, reports, profiles, diagnostics, themes, tray integration, loopback-only backend management, and clean child-process shutdown.
+- Added self-contained Windows App SDK output, standalone Python backends, portable ZIP validation, and an Inno Setup installer.
 
-- Native SwiftUI macOS app in `MAC/FindMyFlipperMac`.
-- Bundled local FastAPI backend with original-compatible FindMyFlipper logic.
-- `.keys` import, validation, Keychain-only private key storage, and local profile persistence.
-- Apple access onboarding through the local backend.
-- CoreBluetooth scanning, selection, reconnect state, battery display, and alert command support.
-- MapKit map screen, dashboard, reports, profiles, settings, diagnostics, and menu bar status.
-- Flipper microSD folder support for `/ext/apps_data/findmy`.
-- Generated key replacement flow that removes older copies after a verified replacement.
-- Seven visual themes with orange/white as the default.
-- Real sanitized Mac screenshots, theme screenshots, and updated setup documentation.
-- A sharper theme-colored macOS menu bar icon that uses the same Flipper glyph shape.
-- Report refresh now keeps every unique Find My ping instead of collapsing all reports for one key into a single local report.
+### macOS
 
-### Notes
+- Native SwiftUI app with MapKit, CoreBluetooth, Keychain, menu-bar integration, profiles, diagnostics, themes, and a bundled local backend.
 
-- Windows users can keep using the existing Electron app. A refreshed Windows update is coming soon.
-- The Mac app is intended only for tracking your own Flipper Zero with `.keys` files you generated or imported yourself.
-- Private keys are stored in macOS Keychain by the native Mac app.
-- The generated Find My MAC and the CoreBluetooth identifier are intentionally modeled as separate identities.
+### Security
+
+- Private keys are never serialized into profile JSON.
+- Apple credentials and 2FA codes are not persisted.
+- Native local services listen only on loopback.
+- Generated Find My MAC addresses remain distinct from physical Bluetooth identifiers.
 
 ### Credits
 
-FindMyFlipperGUI builds on the original [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) project by Matthew KuKanich.
+FindMyFlipperGUI builds on [FindMyFlipper](https://github.com/MatthewKuKanich/FindMyFlipper) by Matthew KuKanich. See the platform-specific third-party notices for dependency credits and licenses.
