@@ -6,14 +6,16 @@ from typing import Optional
 import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
+from starlette.concurrency import run_in_threadpool
 from .key_parser import KeyParser
 from .decryptor import Decryptor
 from .models import FindMyKeyModel
 from .storage import ReportStorage, AuthStorage
 from .auth import AuthManager
 from .reports import ReportFetcher, AuthRequiredError
-from .anisette import ensure_anisette_server
+from .anisette import ensure_anisette_server, get_anisette_status
 from .key_generator import generate_keys_content
+from . import platform_bridge
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -44,6 +46,16 @@ class AuthConnectRequest(BaseModel):
 
 class StartAnisetteRequest(BaseModel):
     install_if_missing: bool = False
+
+class FlipperKeyRequest(BaseModel):
+    filename: str
+
+class FlipperKeyWriteRequest(BaseModel):
+    filename: str
+    raw_content: str
+
+class FlipperKeyVerifyRequest(BaseModel):
+    hashed_adv_key_base64: str
 
 # --- Endpoints ---
 @app.get("/health")
@@ -130,6 +142,47 @@ async def start_anisette(body: Optional[StartAnisetteRequest] = None):
     request = body or StartAnisetteRequest()
     result = ensure_anisette_server(install_if_missing=request.install_if_missing)
     return result.as_dict()
+
+
+@app.get("/auth/anisette-status")
+async def anisette_status():
+    return get_anisette_status()
+
+
+async def _desktop_call(function, *args):
+    try:
+        return await run_in_threadpool(function, *args)
+    except (RuntimeError, ValueError) as exc:
+        return {"ok": False, "error": str(exc)}
+
+
+@app.get("/desktop/flipper/status")
+async def flipper_status():
+    return await _desktop_call(platform_bridge.status)
+
+
+@app.get("/desktop/flipper/keys")
+async def flipper_keys():
+    return await _desktop_call(platform_bridge.list_keys)
+
+
+@app.post("/desktop/flipper/keys/import")
+async def flipper_key_import(body: FlipperKeyRequest):
+    return await _desktop_call(platform_bridge.import_key, body.filename)
+
+
+@app.post("/desktop/flipper/keys/write")
+async def flipper_key_write(body: FlipperKeyWriteRequest):
+    return await _desktop_call(
+        platform_bridge.write_key, body.filename, body.raw_content
+    )
+
+
+@app.post("/desktop/flipper/keys/verify")
+async def flipper_key_verify(body: FlipperKeyVerifyRequest):
+    return await _desktop_call(
+        platform_bridge.verify_hashed_adv_key, body.hashed_adv_key_base64
+    )
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8765)

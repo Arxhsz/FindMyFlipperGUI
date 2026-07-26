@@ -108,6 +108,7 @@ private:
   winrt::fire_and_forget RefreshReports();
   winrt::fire_and_forget InitializeMaps();
   winrt::fire_and_forget RefreshServiceStatus();
+  winrt::fire_and_forget RestartBackend();
   winrt::fire_and_forget ShowRenameDialog();
   winrt::fire_and_forget ShowReportDialog(size_t index);
   winrt::fire_and_forget ShowDiagnosticsDialog();
@@ -129,13 +130,15 @@ private:
   bool m_mapReady{false};
   bool m_dashboardMapReady{false};
   bool m_windowLoaded{false};
-  bool m_mapInitStarted{false};
+  bool m_mainMapInitStarted{false};
+  bool m_dashboardMapInitStarted{false};
   bool m_scanStarted{false};
   bool m_demoMode{false};
   bool m_rebuildingBluetoothList{false};
   std::atomic_bool m_closing{false};
   std::atomic_bool m_bluetoothRenderQueued{false};
   std::atomic_bool m_servicePollBusy{false};
+  std::atomic_bool m_reportRefreshBusy{false};
   std::mutex m_pendingBluetoothMutex;
   std::vector<FindMyFlipper::Models::BluetoothDevice> m_pendingBluetoothDevices;
   std::wstring m_accent{L"#FF5A00"};
@@ -144,7 +147,6 @@ private:
   std::vector<FindMyFlipper::Models::BluetoothDevice> m_bluetoothDevices;
   std::vector<FindMyFlipper::Models::LocationReport> m_reports;
   std::vector<FindMyFlipper::Models::LocationReport> m_visibleReports;
-  winrt::apartment_context m_uiContext;
   Microsoft::UI::Dispatching::DispatcherQueue m_dispatcher{nullptr};
   Microsoft::UI::Dispatching::DispatcherQueueTimer m_servicePollTimer{nullptr};
   FindMyFlipper::Services::ProfileStore m_store;

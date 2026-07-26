@@ -149,3 +149,18 @@ async def test_start_anisette_accepts_install_request(monkeypatch):
     assert r.status_code == 200
     assert r.json()["installed"] is True
     assert captured["install_if_missing"] is True
+
+
+@pytest.mark.anyio
+async def test_anisette_status_is_read_only(monkeypatch):
+    monkeypatch.setattr(
+        server,
+        "get_anisette_status",
+        lambda: {"state": "stopped", "runtime": "docker"},
+    )
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        r = await client.get("/auth/anisette-status")
+
+    assert r.status_code == 200
+    assert r.json() == {"state": "stopped", "runtime": "docker"}

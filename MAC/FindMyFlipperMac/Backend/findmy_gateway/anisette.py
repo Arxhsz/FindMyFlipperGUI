@@ -126,6 +126,30 @@ def anisette_is_available(timeout: float = 2.0) -> bool:
         return False
 
 
+def get_anisette_status() -> dict:
+    """Return a fast, side-effect-free status for desktop UI polling."""
+    if anisette_is_available(timeout=0.5):
+        return {"state": "running", "runtime": "existing"}
+
+    docker = _which("docker")
+    if docker is None:
+        return {"state": "missing", "runtime": None}
+    try:
+        probe = subprocess.run(
+            [docker, "info"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return {"state": "stopped", "runtime": "docker"}
+    return {
+        "state": "starting" if probe.returncode == 0 else "stopped",
+        "runtime": "docker",
+    }
+
+
 def _install_orbstack() -> AnisetteResult:
     if platform.system() != "Darwin":
         return AnisetteResult(
