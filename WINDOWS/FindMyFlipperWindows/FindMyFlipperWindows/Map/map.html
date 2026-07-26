@@ -59,7 +59,16 @@
     function markerHtml(){return '<div class="flipper-pin marker-'+markerStyle+'" id="live-flipper"><div class="flipper-glow"></div><div class="flipper-disc"></div><div class="flipper-device"></div><div class="flipper-screen"></div><div class="flipper-pad"></div></div>'}
     try{map=L.map('map',{zoomControl:false,attributionControl:true}).setView([37.3319,-122.0300],14);reportLayer=L.layerGroup().addTo(map);setMapStyle('dark')}catch(e){document.getElementById('offline').style.display='flex'}
     function setMapStyle(style){if(!map||!tiles[style])return;if(tileLayer)map.removeLayer(tileLayer);const t=tiles[style];tileLayer=L.tileLayer(t.url,{maxZoom:t.maxZoom||20,maxNativeZoom:t.maxNativeZoom||t.maxZoom||20,subdomains:t.subdomains===undefined?'abcd':t.subdomains,attribution:t.attribution}).addTo(map);tileLayer.bringToBack();currentStyle=style;document.querySelectorAll('[data-style]').forEach(b=>b.classList.toggle('active',b.dataset.style===style))}
-    function reportsForFilter(){const now=Date.now()/1000;if(customRange)return allReports.filter(r=>r.timestamp>=customRange.start&&r.timestamp<=customRange.end);const hours=activeFilter==='live'?1:Number(activeFilter);return allReports.filter(r=>!r.timestamp||r.timestamp>=now-hours*3600)}
+    function reportsForFilter(){
+      const valid=allReports.filter(r=>Number.isFinite(Number(r.lat))&&Number.isFinite(Number(r.lon)));
+      if(customRange)return valid.filter(r=>r.timestamp>=customRange.start&&r.timestamp<=customRange.end);
+      if(activeFilter==='live'){
+        if(!valid.length)return[];
+        return[[...valid].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0))[0]];
+      }
+      const hours=Number(activeFilter),now=Date.now()/1000;
+      return valid.filter(r=>!r.timestamp||r.timestamp>=now-hours*3600);
+    }
     function drawReports(focus=true){if(!map||!reportLayer)return;reportLayer.clearLayers();liveMarker=null;const reports=reportsForFilter();if(!reports.length)return;const newest=[...reports].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));const latest=newest[0];const oldest=[...newest].reverse();if(activeFilter!=='live'&&oldest.length>1)L.polyline(oldest.map(r=>[r.lat,r.lon]),{color:currentAccent,weight:4,opacity:.78,lineCap:'round',lineJoin:'round'}).addTo(reportLayer);if(activeFilter!=='live')oldest.slice(0,-1).forEach(r=>{const d=r.timestamp?new Date(r.timestamp*1000).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';L.marker([r.lat,r.lon],{icon:L.divIcon({className:'',html:'<div class="history-wrap"><div class="history-dot"></div><div class="history-time">'+escapeHtml(d)+'</div></div>',iconSize:[54,32],iconAnchor:[27,7]})}).addTo(reportLayer)});liveMarker=L.marker([latest.lat,latest.lon],{icon:L.divIcon({className:'',html:markerHtml(),iconSize:[56,56],iconAnchor:[28,28]})}).addTo(reportLayer);const seen=latest.timestamp?relativeTime(latest.timestamp):'Latest report';liveMarker.bindTooltip('<b>'+escapeHtml(profileName)+'</b><br>Last seen '+seen+'<br>Accuracy: '+latest.confidence+' m',{direction:'top',offset:[0,-28],className:'flipper-tooltip'});if(focus)focusVisible(reports)}
     function focusVisible(reports=reportsForFilter()){if(!map||!reports.length)return;const pts=reports.map(r=>[r.lat,r.lon]);if(pts.length===1)map.setView(pts[0],16);else map.fitBounds(pts,{padding:[80,80],maxZoom:17})}
     function setReports(reports,name){allReports=Array.isArray(reports)?reports:[];profileName=name||'Flipper';drawReports(true)}
