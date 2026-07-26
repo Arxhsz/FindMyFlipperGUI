@@ -34,7 +34,7 @@ is not exposed, clone the repository, then run:
 11. Extract `FindMyFlipperPortable.zip` into a clean folder and launch it.
 12. Install and uninstall `FindMyFlipperSetup.exe`.
 
-## Results for windows-native-build-fix-19
+## Results for windows-native-build-fix-20
 
 - The map control button is anchored at the lower-right and expands to current
   marker, zoom in, zoom out, and map-style controls.
@@ -94,6 +94,10 @@ the v145 toolset, and Windows SDK 10.0.26100.0:
   and returns through its originating C++/WinRT apartment context.
 - WebView2 full and compact maps rendered in both the Debug output and a clean
   extraction of the portable ZIP.
+- The default Live map was tested with a valid report aged 48 hours. It
+  rendered exactly one current Flipper marker, centered on its coordinates,
+  and selected zoom level 16 instead of hiding the marker behind a one-hour
+  cutoff.
 - Apple-auth vendor output is captured when running under the windowed
   PyInstaller bootloader, preventing closed-pipe `WinError 233` failures.
 - Backend health, report-refresh failure handling, Docker/anisette status,
@@ -101,7 +105,7 @@ the v145 toolset, and Windows SDK 10.0.26100.0:
 - Backend tests: 31 passed. Both native x64 configurations built with zero
   errors. Portable ZIP and Inno Setup installer were produced and validated.
 
-Not represented as passing for fix-19: a new live Apple credential/2FA
+Not represented as passing for fix-20: a new live Apple credential/2FA
 submission, real Find My report retrieval, or physical Flipper USB/BLE/GATT
 operations. Those require the account and hardware to be available during the
 final clean test and are not inferred from simulated data.
