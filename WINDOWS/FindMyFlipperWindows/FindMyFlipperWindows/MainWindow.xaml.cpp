@@ -419,6 +419,7 @@ MainWindow::~MainWindow() {
 }
 
 fire_and_forget MainWindow::InitializeServices() {
+  apartment_context uiThread;
   if (m_demoMode) {
     m_backendReady = true;
     m_anisetteReady = true;
@@ -434,7 +435,7 @@ fire_and_forget MainWindow::InitializeServices() {
   try {
     co_await resume_background();
     auto health = m_backend.EnsureServices();
-    co_await m_uiContext;
+    co_await uiThread;
     if (m_closing)
       co_return;
     m_backendReady = health.backendReady;
@@ -565,6 +566,7 @@ void MainWindow::ImportFlipperKeys_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::ImportKeysFromFlipper() {
+  apartment_context uiThread;
   m_importFlipperKeysButton.IsEnabled(false);
   KeysInfo().Severity(InfoBarSeverity::Informational);
   KeysInfo().Message(L"Reading .keys from /ext/apps_data/findmy over USB...");
@@ -591,7 +593,7 @@ fire_and_forget MainWindow::ImportKeysFromFlipper() {
   } catch (hresult_error const &error) {
     response = L"{\"ok\":false,\"error\":\"" + error.message() + L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
   if (m_closing)
     co_return;
   m_importFlipperKeysButton.IsEnabled(true);
@@ -698,6 +700,7 @@ void MainWindow::GenerateKeys_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::GenerateKeys() {
+  apartment_context uiThread;
   GenerateKeysButton().IsEnabled(false);
   KeysInfo().Severity(InfoBarSeverity::Informational);
   KeysInfo().Message(L"Generating a new Find My identity locally...");
@@ -713,7 +716,7 @@ fire_and_forget MainWindow::GenerateKeys() {
     response = L"{\"ok\":false,\"error\":\"" +
                winrt::to_hstring(exception.what()) + L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
   GenerateKeysButton().IsEnabled(true);
   try {
     auto result = JsonObject::Parse(response);
@@ -764,6 +767,7 @@ void MainWindow::PrepareFlipper_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::PrepareFlipper() {
+  apartment_context uiThread;
   PrepareFlipperButton().IsEnabled(false);
   FlipperUsbStatus().Text(L"Checking for a USB-connected Flipper...");
   co_await resume_background();
@@ -774,7 +778,7 @@ fire_and_forget MainWindow::PrepareFlipper() {
     response = L"{\"ok\":false,\"error\":\"" +
                winrt::to_hstring(exception.what()) + L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
   PrepareFlipperButton().IsEnabled(true);
   try {
     auto result = JsonObject::Parse(response);
@@ -800,6 +804,7 @@ void MainWindow::CopyKeysToFlipper_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::CopyKeysToFlipper() {
+  apartment_context uiThread;
   if (m_keyRawContent.empty()) {
     auto const key = m_store.Key();
     auto privateKey = CredentialService::LoadPrivateKey(key.id);
@@ -830,7 +835,7 @@ fire_and_forget MainWindow::CopyKeysToFlipper() {
     response = L"{\"ok\":false,\"error\":\"" +
                winrt::to_hstring(exception.what()) + L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
   CopyKeysButton().IsEnabled(true);
   try {
     auto result = JsonObject::Parse(response);
@@ -866,6 +871,7 @@ fire_and_forget MainWindow::ConfirmRefreshFlipperDetails() {
 }
 
 fire_and_forget MainWindow::RefreshFlipperDetails() {
+  apartment_context uiThread;
   m_refreshFlipperButton.IsEnabled(false);
   m_flipperUsbDetail.Text(
       L"Reading /ext/apps_data/findmy through the Flipper serial CLI...");
@@ -883,7 +889,7 @@ fire_and_forget MainWindow::RefreshFlipperDetails() {
     response = L"{\"ok\":false,\"error\":\"" +
                JsonEscape(message) + L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
   m_refreshFlipperButton.IsEnabled(true);
   try {
     auto result = JsonObject::Parse(response);
@@ -923,6 +929,7 @@ void MainWindow::ConnectApple_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::ConnectApple() {
+  apartment_context uiThread;
   ConnectAppleButton().IsEnabled(false);
   AppleProgress().IsActive(true);
   auto username = std::wstring(AppleIdBox().Text());
@@ -966,7 +973,7 @@ fire_and_forget MainWindow::ConnectApple() {
     response = L"{\"ok\":false,\"error\":\"" + winrt::to_hstring(error.what()) +
                L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
   ConnectAppleButton().IsEnabled(true);
   AppleProgress().IsActive(false);
   try {
@@ -1342,9 +1349,19 @@ void MainWindow::OpenShell(std::wstring const &page) {
 }
 
 fire_and_forget MainWindow::InitializeMaps() {
-  if (m_mapInitStarted || m_closing)
+  if (m_closing || !m_windowLoaded ||
+      AppShell().Visibility() != Visibility::Visible)
     co_return;
-  m_mapInitStarted = true;
+
+  bool const compact = m_currentPage == L"dashboard";
+  if (!compact && m_currentPage != L"map")
+    co_return;
+  auto &started = compact ? m_dashboardMapInitStarted : m_mainMapInitStarted;
+  auto &ready = compact ? m_dashboardMapReady : m_mapReady;
+  if (started || ready)
+    co_return;
+  started = true;
+
   auto weak = get_weak();
   try {
     auto mapPath = AssetPath(L"Map\\map.html");
@@ -1352,55 +1369,83 @@ fire_and_forget MainWindow::InitializeMaps() {
       throw hresult_error(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND),
                           L"The packaged map assets are missing.");
 
-    co_await MapWebView().EnsureCoreWebView2Async();
-    if (m_closing)
-      co_return;
-    co_await DashboardMap().EnsureCoreWebView2Async();
-    if (m_closing)
-      co_return;
-
+    auto view = compact ? DashboardMap() : MapWebView();
     auto mapFolder = mapPath.parent_path().wstring();
-    auto configure = [&](WebView2 const &view, bool compact) {
-      auto core = view.CoreWebView2();
-      if (!core)
-        throw hresult_error(E_FAIL, L"WebView2 did not create its browser core.");
-      core.SetVirtualHostNameToFolderMapping(
-          L"appassets.local", mapFolder,
-          Microsoft::Web::WebView2::Core::CoreWebView2HostResourceAccessKind::Allow);
-      if (!compact) {
-        core.WebMessageReceived(
-            [weak](auto const &, Microsoft::Web::WebView2::Core::
-                                     CoreWebView2WebMessageReceivedEventArgs const &args) {
-              if (auto self = weak.get()) {
-                try {
-                  auto message = std::wstring(args.TryGetWebMessageAsString());
-                  if (message == L"refreshReports")
-                    self->RefreshReports();
-                  else if (message == L"diagnostics")
-                    self->RunDiagnostics();
-                  else if (message.rfind(L"openMaps:", 0) == 0) {
-                    auto coordinates = message.substr(9);
-                    std::replace(coordinates.begin(), coordinates.end(), L',',
-                                 L'~');
-                    ShellExecuteW(nullptr, L"open",
-                                  (L"https://www.bing.com/maps?cp=" +
-                                   coordinates + L"&lvl=16&style=r")
-                                      .c_str(),
-                                  nullptr, nullptr, SW_SHOWNORMAL);
-                  }
-                } catch (hresult_error const &error) {
-                  Trace(L"Map command failed: " + std::wstring(error.message()));
-                }
-              }
-            });
-      }
-      core.Navigate(compact ? L"https://appassets.local/map.html?compact=1"
-                            : L"https://appassets.local/map.html");
-    };
-    configure(MapWebView(), false);
-    configure(DashboardMap(), true);
+    view.CoreWebView2Initialized(
+        [weak, compact, mapFolder](
+            WebView2 const &initializedView,
+            CoreWebView2InitializedEventArgs const &args) {
+          auto self = weak.get();
+          if (!self || self->m_closing)
+            return;
+          try {
+            auto core = initializedView.CoreWebView2();
+            if (!core) {
+              auto code = args.Exception();
+              winrt::hresult failure =
+                  code.value == 0 ? winrt::hresult(E_PENDING) : code;
+              throw hresult_error(
+                  failure,
+                  hstring(code.value == 0
+                              ? L"WebView2 browser creation did not complete."
+                              : L"WebView2 browser creation failed."));
+            }
+            core.SetVirtualHostNameToFolderMapping(
+                L"appassets.local", mapFolder,
+                Microsoft::Web::WebView2::Core::
+                    CoreWebView2HostResourceAccessKind::Allow);
+            if (!compact) {
+              core.WebMessageReceived(
+                  [weak](auto const &, Microsoft::Web::WebView2::Core::
+                                           CoreWebView2WebMessageReceivedEventArgs
+                                               const &args) {
+                    if (auto owner = weak.get()) {
+                      try {
+                        auto message =
+                            std::wstring(args.TryGetWebMessageAsString());
+                        if (message == L"refreshReports")
+                          owner->RefreshReports();
+                        else if (message == L"diagnostics")
+                          owner->RunDiagnostics();
+                        else if (message.rfind(L"openMaps:", 0) == 0) {
+                          auto coordinates = message.substr(9);
+                          std::replace(coordinates.begin(), coordinates.end(),
+                                       L',', L'~');
+                          ShellExecuteW(
+                              nullptr, L"open",
+                              (L"https://www.bing.com/maps?cp=" + coordinates +
+                               L"&lvl=16&style=r")
+                                  .c_str(),
+                              nullptr, nullptr, SW_SHOWNORMAL);
+                        }
+                      } catch (hresult_error const &error) {
+                        Trace(L"Map command failed: " +
+                              std::wstring(error.message()));
+                      }
+                    }
+                  });
+            }
+            core.Navigate(compact
+                              ? L"https://appassets.local/map.html?compact=1"
+                              : L"https://appassets.local/map.html");
+            self->GlobalWarning().IsOpen(false);
+          } catch (hresult_error const &error) {
+            if (compact)
+              self->m_dashboardMapInitStarted = false;
+            else
+              self->m_mainMapInitStarted = false;
+            self->GlobalWarning().Message(L"Map initialization failed: " +
+                                          std::wstring(error.message()));
+            self->GlobalWarning().IsOpen(true);
+            Trace(L"Map initialization callback failed: " +
+                  std::wstring(error.message()));
+          }
+        });
+    co_await view.EnsureCoreWebView2Async();
+    if (m_closing)
+      co_return;
   } catch (hresult_error const &error) {
-    m_mapInitStarted = false;
+    started = false;
     if (auto self = weak.get()) {
       self->GlobalWarning().Message(L"Map initialization failed: " +
                                     std::wstring(error.message()));
@@ -1424,6 +1469,8 @@ void MainWindow::ShowPage(std::wstring const &page) {
                                                 : Visibility::Collapsed);
   SettingsPage().Visibility(page == L"settings" ? Visibility::Visible
                                                 : Visibility::Collapsed);
+  if (m_windowLoaded && AppShell().Visibility() == Visibility::Visible)
+    InitializeMaps();
 }
 
 void MainWindow::Navigate_Click(IInspectable const &sender,
@@ -1459,6 +1506,7 @@ void MainWindow::RefreshReports_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::RefreshReports() {
+  apartment_context uiThread;
   if (m_demoMode) {
     UpdateProfileUI();
     UpdateMap();
@@ -1470,9 +1518,12 @@ fire_and_forget MainWindow::RefreshReports() {
     GlobalWarning().IsOpen(true);
     co_return;
   }
+  if (m_reportRefreshBusy.exchange(true))
+    co_return;
   auto key = m_store.Key();
   auto privateKey = CredentialService::LoadPrivateKey(key.id);
   if (!privateKey) {
+    m_reportRefreshBusy = false;
     GlobalWarning().Message(
         L"The private key is missing from Windows Credential Manager. Import "
         L"the .keys file again.");
@@ -1495,7 +1546,10 @@ fire_and_forget MainWindow::RefreshReports() {
     response = L"{\"ok\":false,\"error\":\"" + winrt::to_hstring(error.what()) +
                L"\"}";
   }
-  co_await m_uiContext;
+  co_await uiThread;
+  m_reportRefreshBusy = false;
+  if (m_closing)
+    co_return;
   try {
     auto result = JsonObject::Parse(response);
     if (!result.GetNamedBoolean(L"ok", false)) {
@@ -1874,6 +1928,7 @@ void MainWindow::MarkerPicker_SelectionChanged(
 }
 
 fire_and_forget MainWindow::RefreshServiceStatus() {
+  apartment_context uiThread;
   if (m_demoMode)
     co_return;
   if (m_closing || m_servicePollBusy.exchange(true))
@@ -1887,7 +1942,7 @@ fire_and_forget MainWindow::RefreshServiceStatus() {
   } catch (...) {
     response.clear();
   }
-  co_await m_uiContext;
+  co_await uiThread;
   m_servicePollBusy = false;
   if (m_closing)
     co_return;
@@ -1925,7 +1980,37 @@ void MainWindow::SignInAgain_Click(IInspectable const &,
 }
 void MainWindow::RestartBackend_Click(IInspectable const &,
                                       RoutedEventArgs const &) {
-  m_backend.Restart();
+  RestartBackend();
+}
+
+fire_and_forget MainWindow::RestartBackend() {
+  apartment_context uiThread;
+  if (m_servicePollBusy.exchange(true))
+    co_return;
+  SettingsBackendStatus().Text(L"Local backend: Restarting");
+  std::wstring error;
+  try {
+    co_await resume_background();
+    m_backend.Restart();
+  } catch (hresult_error const &exception) {
+    error = exception.message();
+  } catch (std::exception const &exception) {
+    error = winrt::to_hstring(exception.what());
+  } catch (...) {
+    error = L"Unknown backend restart failure.";
+  }
+  co_await uiThread;
+  m_servicePollBusy = false;
+  if (m_closing)
+    co_return;
+  if (!error.empty()) {
+    m_backendReady = false;
+    SettingsBackendStatus().Text(L"Local backend: Offline");
+    GlobalWarning().Severity(InfoBarSeverity::Error);
+    GlobalWarning().Message(L"Backend restart failed: " + error);
+    GlobalWarning().IsOpen(true);
+    co_return;
+  }
   InitializeServices();
 }
 void MainWindow::ResetData_Click(IInspectable const &,

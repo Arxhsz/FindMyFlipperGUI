@@ -10,9 +10,10 @@ from __future__ import annotations
 import base64
 import builtins
 import importlib
+import io
 import logging
 import sys
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from pathlib import Path
 from types import ModuleType
 from typing import Iterator, Optional
@@ -86,18 +87,23 @@ class AuthManager:
 
         try:
             module = self._load_pypush_module(vendor_cores_path)
-            with self._patched_auth_flow(
-                module,
-                username=username,
-                password=password,
-                second_factor=second_factor,
-                code=code,
-            ):
-                mobileme = module.icloud_login_mobileme(
+            # PyInstaller windowed executables have no writable console pipes.
+            # The vendored auth core prints progress, so capture it locally to
+            # prevent BrokenPipeError/WinError 233 from terminating sign-in.
+            captured_output = io.StringIO()
+            with redirect_stdout(captured_output), redirect_stderr(captured_output):
+                with self._patched_auth_flow(
+                    module,
                     username=username,
                     password=password,
                     second_factor=second_factor,
-                )
+                    code=code,
+                ):
+                    mobileme = module.icloud_login_mobileme(
+                        username=username,
+                        password=password,
+                        second_factor=second_factor,
+                    )
 
             auth_data = self._auth_data_from_mobileme(username, mobileme)
             self._storage.save_auth(auth_data)

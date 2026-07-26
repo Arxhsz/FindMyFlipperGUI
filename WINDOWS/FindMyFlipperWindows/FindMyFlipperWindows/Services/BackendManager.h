@@ -31,5 +31,6 @@ private:
   HANDLE m_processJob{};
   PROCESS_INFORMATION m_backend{};
   PROCESS_INFORMATION m_anisette{};
+  mutable std::recursive_mutex m_mutex;
 };
 } // namespace FindMyFlipper::Services

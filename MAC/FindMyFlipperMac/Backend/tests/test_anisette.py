@@ -33,3 +33,22 @@ def test_ensure_anisette_returns_install_error(monkeypatch):
 
     assert result.ok is False
     assert result.error == "install failed"
+
+
+def test_status_reports_running_service_without_starting_docker(monkeypatch):
+    monkeypatch.setattr(anisette, "anisette_is_available", lambda timeout=2.0: True)
+
+    assert anisette.get_anisette_status() == {
+        "state": "running",
+        "runtime": "existing",
+    }
+
+
+def test_status_reports_missing_runtime(monkeypatch):
+    monkeypatch.setattr(anisette, "anisette_is_available", lambda timeout=2.0: False)
+    monkeypatch.setattr(anisette, "_which", lambda name: None)
+
+    assert anisette.get_anisette_status() == {
+        "state": "missing",
+        "runtime": None,
+    }

@@ -85,6 +85,7 @@ void BackendManager::StopOwnedProcesses() {
 }
 
 ServiceHealth BackendManager::EnsureServices() {
+  std::scoped_lock lock(m_mutex);
   ServiceHealth result;
   if (!IsHealthy()) {
     auto executable = m_root / L"FindMyFlipperBackend.exe";
@@ -141,12 +142,14 @@ ServiceHealth BackendManager::EnsureServices() {
 }
 
 void BackendManager::Restart() {
+  std::scoped_lock lock(m_mutex);
   StopOwnedProcesses();
   CreateProcessJob();
   EnsureServices();
 }
 
 bool BackendManager::IsHealthy() const {
+  std::scoped_lock lock(m_mutex);
   try {
     auto response = Get(L"/health");
     return response.find(L"\"status\":\"ok\"") != std::wstring::npos ||
@@ -193,10 +196,12 @@ bool BackendManager::StartProcess(std::filesystem::path const &executable,
 }
 
 std::wstring BackendManager::Get(std::wstring const &path) const {
+  std::scoped_lock lock(m_mutex);
   return Request(L"GET", path, L"");
 }
 std::wstring BackendManager::Post(std::wstring const &path,
                                   std::wstring const &body) const {
+  std::scoped_lock lock(m_mutex);
   return Request(L"POST", path, body);
 }
 

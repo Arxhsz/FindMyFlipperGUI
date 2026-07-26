@@ -13,3 +13,4 @@ pydantic
 httpx
 pytest
 pytest-asyncio
+pyserial

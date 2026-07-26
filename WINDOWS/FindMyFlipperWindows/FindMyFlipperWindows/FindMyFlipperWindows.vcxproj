@@ -15,6 +15,7 @@
     <WindowsTargetPlatformMinVersion>10.0.19041.0</WindowsTargetPlatformMinVersion>
     <AppxPackage>false</AppxPackage>
     <WindowsPackageType>None</WindowsPackageType>
+    <AppContainerApplication>false</AppContainerApplication>
     <ApplicationIcon>Assets\FindMyFlipper.ico</ApplicationIcon>
     <ApplicationType>Windows Store</ApplicationType>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
@@ -46,6 +47,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <LargeAddressAware>true</LargeAddressAware>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)FindMyFlipperWindows.map</MapFileName>
+      <AdditionalOptions>/APPCONTAINER:NO %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>advapi32.lib;credui.lib;ole32.lib;user32.lib;winhttp.lib;shell32.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

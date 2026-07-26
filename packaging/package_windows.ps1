@@ -87,7 +87,7 @@ try {
     # Use the console bootloader for reliable Python 3.14 startup. The native
     # process manager always launches helpers with CREATE_NO_WINDOW, so no
     # console is presented to end users.
-    & $VenvPython -m PyInstaller --noconfirm --clean --onedir --console `
+    & $VenvPython -m PyInstaller --noconfirm --clean --onedir --noconsole `
         --contents-directory BackendRuntime `
         --name FindMyFlipperBackend `
         --distpath $BackendDist --workpath (Join-Path $WindowsRoot "backend-build\gateway") `
@@ -99,7 +99,7 @@ try {
         $BackendEntry
     if ($LASTEXITCODE -ne 0) { throw "Backend executable build failed." }
 
-    & $VenvPython -m PyInstaller --noconfirm --clean --onedir --console `
+    & $VenvPython -m PyInstaller --noconfirm --clean --onedir --noconsole `
         --contents-directory AnisetteRuntime `
         --name FindMyFlipperAnisette `
         --distpath $BackendDist --workpath (Join-Path $WindowsRoot "backend-build\anisette") `

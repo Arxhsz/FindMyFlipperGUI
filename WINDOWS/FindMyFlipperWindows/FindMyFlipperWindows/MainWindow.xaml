@@ -18,7 +18,9 @@
             <TextBlock x:Name="StepLabel" Text="Step 1 of 5" HorizontalAlignment="Center" VerticalAlignment="Center"
                        Foreground="{StaticResource SecondaryTextBrush}" FontWeight="SemiBold" />
 
-            <Grid Grid.Row="1" Width="720" MaxWidth="720" HorizontalAlignment="Center">
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
+            <Grid MaxWidth="720" HorizontalAlignment="Stretch" Margin="20,8,20,16">
                 <Grid x:Name="WelcomeStep">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="22">
                         <TextBlock Text="Welcome to FindMyFlipper" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" />
@@ -67,8 +69,11 @@
                 </Grid>
 
                 <Grid x:Name="AppleStep" Visibility="Collapsed">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="15">
-                        <FontIcon Glyph="&#xE72E;" FontSize="64" Foreground="{StaticResource SecondaryTextBrush}" />
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="13">
+                        <Grid Width="72" Height="60">
+                            <FontIcon Glyph="&#xE72E;" FontSize="46" Foreground="{StaticResource SecondaryTextBrush}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
                         <TextBlock Text="Connect Apple Access" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
                         <TextBlock Text="Sign in to request encrypted Find My reports for your imported key. Credentials stay inside the local sign-in flow."
                                    TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource SecondaryTextBrush}" />
@@ -132,6 +137,7 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+            </ScrollViewer>
 
             <Grid Grid.Row="2" Margin="32,10">
                 <Button x:Name="BackButton" Content="Back" Click="Back_Click" Visibility="Collapsed" HorizontalAlignment="Left" />
