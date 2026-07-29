@@ -18,7 +18,7 @@ public:
   winrt::fire_and_forget Connect(Models::BluetoothDevice device,
                                  bool reconnect = false);
   winrt::fire_and_forget Reconnect(std::wstring deviceId);
-  winrt::fire_and_forget PlayAlert();
+  void PlayAlert();
   void Disconnect();
   std::wstring ConnectedDeviceId() const;
   std::wstring ConnectedDeviceName() const;
@@ -32,6 +32,7 @@ public:
 private:
   winrt::fire_and_forget HandleUnexpectedDisconnect(uint64_t generation,
                                                      std::wstring deviceId);
+  winrt::fire_and_forget SendAlert(bool retrying);
   bool DeviceConnected() const noexcept;
   void NotifyStatus(std::wstring const &message, bool connected, int battery)
       noexcept;
@@ -63,7 +64,6 @@ private:
   std::atomic_int m_currentRssi{-127};
   std::atomic_bool m_alertSupported{false};
   std::atomic_bool m_pendingAlert{false};
-  std::atomic_int m_alertRetryCount{0};
   uint64_t m_connectedAddress{};
   bool m_connectedAddressRandom{false};
   std::wstring m_connectedName;

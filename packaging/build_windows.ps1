@@ -11,7 +11,7 @@ $Root = Split-Path -Parent $PSScriptRoot
 $Solution = Join-Path $Root "WINDOWS\FindMyFlipperWindows\FindMyFlipperWindows.sln"
 $ProjectRoot = Join-Path $Root "WINDOWS\FindMyFlipperWindows\FindMyFlipperWindows"
 $VsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-$SourceRevision = "windows-native-build-fix-22"
+$SourceRevision = "windows-native-build-fix-23"
 
 $RequiredSourceMarkers = @(
     @{ Path = Join-Path $ProjectRoot "FindMyFlipperWindows.vcxproj"; Marker = "<UseWinUI>true</UseWinUI>" },

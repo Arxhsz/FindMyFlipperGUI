@@ -282,7 +282,6 @@ fire_and_forget BluetoothManager::Connect(BluetoothDeviceRecord selected,
   auto generation = ++m_connectionGeneration;
   if (!reconnect) {
     m_pendingAlert = false;
-    m_alertRetryCount = 0;
     if (m_connectedAddress != 0 && m_connectedAddress != selected.address)
       m_alertSupported = false;
   }
@@ -434,9 +433,8 @@ fire_and_forget BluetoothManager::Connect(BluetoothDeviceRecord selected,
                  true, battery);
     if (m_pendingAlert.exchange(false)) {
       if (m_alertCharacteristic)
-        PlayAlert();
+        SendAlert(true);
       else {
-        m_alertRetryCount = 0;
         NotifyStatus(
             L"Connected, but the current Flipper app is not exposing its alert service.",
             true, -1);
@@ -493,16 +491,19 @@ fire_and_forget BluetoothManager::Reconnect(std::wstring deviceId) {
   }
 }
 
-fire_and_forget BluetoothManager::PlayAlert() {
+void BluetoothManager::PlayAlert() {
+  SendAlert(false);
+}
+
+fire_and_forget BluetoothManager::SendAlert(bool retrying) {
   try {
-    if (!m_alertCharacteristic) {
-      if (!m_savedDeviceId.empty() && m_alertRetryCount.exchange(1) == 0) {
+    if (!m_alertCharacteristic || !DeviceConnected()) {
+      if (!m_savedDeviceId.empty() && !retrying) {
         m_pendingAlert = true;
         NotifyStatus(L"Restoring the Flipper alert service...", true, -1);
         Reconnect(m_savedDeviceId);
       } else {
         m_pendingAlert = false;
-        m_alertRetryCount = 0;
         NotifyStatus(
             L"The current Flipper app is not exposing its alert service. Open FindMyFlipper on the device and try again.",
             DeviceConnected(), -1);
@@ -515,33 +516,35 @@ fire_and_forget BluetoothManager::PlayAlert() {
       writer.WriteBytes(payload);
     } else
       writer.WriteByte(2);
+    auto properties = m_alertCharacteristic.CharacteristicProperties();
+    auto writeOption =
+        (properties & GattCharacteristicProperties::Write) ==
+                GattCharacteristicProperties::Write
+            ? GattWriteOption::WriteWithResponse
+            : GattWriteOption::WriteWithoutResponse;
     auto status = co_await m_alertCharacteristic.WriteValueWithResultAsync(
-        writer.DetachBuffer());
+        writer.DetachBuffer(), writeOption);
     if (status.Status() == GattCommunicationStatus::Success) {
       m_alertSupported = true;
-      m_alertRetryCount = 0;
       NotifyStatus(L"Flipper confirmed the alert command.", true, -1);
-    } else if (m_alertRetryCount.exchange(1) == 0 &&
-               !m_savedDeviceId.empty()) {
+    } else if (!retrying && !m_savedDeviceId.empty()) {
       m_alertCharacteristic = nullptr;
       m_pendingAlert = true;
       NotifyStatus(L"The alert service changed. Reconnecting and retrying...",
                    true, -1);
       Reconnect(m_savedDeviceId);
     } else {
-      m_alertRetryCount = 0;
       NotifyStatus(L"The Flipper rejected the alert command.",
                    DeviceConnected(), -1);
     }
   } catch (hresult_error const &error) {
-    if (m_alertRetryCount.exchange(1) == 0 && !m_savedDeviceId.empty()) {
+    if (!retrying && !m_savedDeviceId.empty()) {
       m_alertCharacteristic = nullptr;
       m_pendingAlert = true;
       NotifyStatus(L"The alert connection changed. Reconnecting and retrying...",
                    true, -1);
       Reconnect(m_savedDeviceId);
     } else {
-      m_alertRetryCount = 0;
       NotifyStatus(L"Alert failed: " + std::wstring(error.message()),
                    DeviceConnected(), -1);
     }

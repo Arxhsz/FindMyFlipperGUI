@@ -34,7 +34,18 @@ is not exposed, clone the repository, then run:
 11. Extract `FindMyFlipperPortable.zip` into a clean folder and launch it.
 12. Install and uninstall `FindMyFlipperSetup.exe`.
 
-## Results for windows-native-build-fix-22
+## Results for windows-native-build-fix-23
+
+- Historical map input is normalized for legacy millisecond timestamps and
+  invalid coordinates. When a freshly loaded identity only has older reports,
+  the main map automatically selects the smallest 24H, 7D, or 30D range that
+  exposes those historical markers.
+- Every Play Alert click now begins an independent attempt. A reconnect retry
+  is bounded to one attempt and cannot suppress a later user click; GATT writes
+  honor the characteristic's with-response or without-response capability.
+- Buttons now use an app-owned WinUI visual-state template. Pointer exit always
+  restores the active theme brush instead of retaining the stock white hover
+  state.
 
 - Backend readiness is now independent of Docker/anisette startup. Local key
   generation, USB access, diagnostics, report controls, and backend restart no
@@ -118,7 +129,7 @@ the v145 toolset, and Windows SDK 10.0.26100.0:
 - Backend tests: 31 passed. Both native x64 configurations built with zero
   errors. Portable ZIP and Inno Setup installer were produced and validated.
 
-Not represented as passing for fix-22: a new live Apple credential/2FA
+Not represented as passing for fix-23: a new live Apple credential/2FA
 submission, real Find My report retrieval, or physical Flipper USB/BLE/GATT
 operations. Those require the account and hardware to be available during the
 final clean test and are not inferred from simulated data.

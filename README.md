@@ -41,7 +41,7 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\packaging\package_windows.ps1 -Platform x64
 ```
 
-The current native source revision is `windows-native-build-fix-22`. Windows-specific implementation and QA notes are in [`WINDOWS/FindMyFlipperWindows`](WINDOWS/FindMyFlipperWindows).
+The current native source revision is `windows-native-build-fix-23`. Windows-specific implementation and QA notes are in [`WINDOWS/FindMyFlipperWindows`](WINDOWS/FindMyFlipperWindows).
 
 ## macOS app
 
