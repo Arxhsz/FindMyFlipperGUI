@@ -23,6 +23,7 @@ def main() -> None:
     xaml_file = PROJECT / "MainWindow.xaml"
     ET.parse(project_file)
     ET.parse(xaml_file)
+    ET.parse(PROJECT / "App.xaml")
 
     project = project_file.read_text(encoding="utf-8")
     xaml_cpp = (PROJECT / "MainWindow.xaml.cpp").read_text(encoding="utf-8")
@@ -60,6 +61,11 @@ def main() -> None:
             "Native BLE advertisement watcher is missing")
     require("setMarkerStyle" in map_html and "data-filter=\"24\"" in map_html,
             "Map marker or 24-hour timeline support is missing")
+    require("normalizeReport" in map_html and "selectInitialHistoryRange" in map_html,
+            "Historical report normalization or automatic range selection is missing")
+    require("SendAlert(bool retrying)" in bluetooth_cpp and
+            "m_alertRetryCount" not in bluetooth_cpp,
+            "Play Alert still uses shared retry state")
     require('host="127.0.0.1"' in server_py,
             "Backend is not explicitly bound to loopback")
     require('/desktop/flipper/keys/import' in server_py,
@@ -80,7 +86,10 @@ def main() -> None:
     portable = ROOT / "release/FindMyFlipperPortable.zip"
     require(portable.is_file() and portable.stat().st_size > 0,
             "Portable ZIP is missing or empty")
-    forbidden = {".pdb", ".obj", ".tlog", ".ilk", ".exp", ".lib", ".vcxproj"}
+    forbidden = {
+        ".pdb", ".obj", ".tlog", ".ilk", ".exp", ".lib", ".vcxproj",
+        ".log", ".keys",
+    }
     with zipfile.ZipFile(portable) as archive:
         names = archive.namelist()
         require(archive.testzip() is None, "Portable ZIP has a corrupt member")

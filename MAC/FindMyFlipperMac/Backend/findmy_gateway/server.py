@@ -73,8 +73,11 @@ async def validate_keys(body: KeysValidateRequest):
 @app.post("/reports/decrypted")
 async def get_decrypted_reports(body: ReportsRequest):
     try:
-        reports = _report_fetcher.fetch_and_decrypt(
-            body.hashed_adv_key_base64, body.private_key_base64, body.hours
+        reports = await run_in_threadpool(
+            _report_fetcher.fetch_and_decrypt,
+            body.hashed_adv_key_base64,
+            body.private_key_base64,
+            body.hours,
         )
         return {
             "ok": True,
@@ -92,8 +95,11 @@ async def get_decrypted_reports(body: ReportsRequest):
 @app.post("/reports/refresh")
 async def refresh_reports(body: ReportsRequest):
     try:
-        reports = _report_fetcher.fetch_and_decrypt(
-            body.hashed_adv_key_base64, body.private_key_base64, body.hours
+        reports = await run_in_threadpool(
+            _report_fetcher.fetch_and_decrypt,
+            body.hashed_adv_key_base64,
+            body.private_key_base64,
+            body.hours,
         )
         return {
             "ok": True,
@@ -119,7 +125,8 @@ async def auth_status():
 @app.post("/auth/connect")
 async def auth_connect(body: Optional[AuthConnectRequest] = None):
     request = body or AuthConnectRequest()
-    return _auth_manager.connect(
+    return await run_in_threadpool(
+        _auth_manager.connect,
         username=request.username,
         password=request.password,
         second_factor=request.second_factor,
@@ -128,7 +135,7 @@ async def auth_connect(body: Optional[AuthConnectRequest] = None):
 
 @app.post("/auth/refresh")
 async def auth_refresh():
-    return _auth_manager.refresh()
+    return await run_in_threadpool(_auth_manager.refresh)
 
 @app.post("/keys/generate")
 async def generate_keys():
@@ -140,13 +147,16 @@ async def generate_keys():
 @app.post("/auth/start-anisette")
 async def start_anisette(body: Optional[StartAnisetteRequest] = None):
     request = body or StartAnisetteRequest()
-    result = ensure_anisette_server(install_if_missing=request.install_if_missing)
+    result = await run_in_threadpool(
+        ensure_anisette_server,
+        install_if_missing=request.install_if_missing,
+    )
     return result.as_dict()
 
 
 @app.get("/auth/anisette-status")
 async def anisette_status():
-    return get_anisette_status()
+    return await run_in_threadpool(get_anisette_status)
 
 
 async def _desktop_call(function, *args):

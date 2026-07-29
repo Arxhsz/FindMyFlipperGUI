@@ -128,16 +128,22 @@ ServiceHealth BackendManager::EnsureServices() {
     return result;
   }
 
-  // The backend owns anisette startup. Running the standalone helper at the
-  // same time causes two Docker probes to race and obscures useful failures.
-  auto response =
-      Post(L"/auth/start-anisette", L"{\"install_if_missing\":false}");
-  result.anisetteReady = response.find(L"\"ok\":true") != std::wstring::npos ||
-                         response.find(L"\"ok\": true") != std::wstring::npos;
-  result.message = result.anisetteReady
-                       ? L"Local backend and Apple access service are ready."
-                       : L"Backend is ready. Anisette needs Docker Desktop; "
-                         L"open Docker and try again.";
+  // Backend readiness must stay independent of Docker and anisette. Starting
+  // anisette can take minutes while Docker Desktop boots. Coupling it to this
+  // method serialized every unrelated request (key generation, USB access,
+  // reports, and diagnostics) behind that startup and made the desktop app
+  // appear hung. Apple sign-in starts anisette explicitly when it is needed.
+  result.anisetteReady = false;
+  result.message = L"Local backend is ready.";
+  try {
+    auto response = Get(L"/auth/anisette-status");
+    result.anisetteReady =
+        response.find(L"\"state\":\"running\"") != std::wstring::npos ||
+        response.find(L"\"state\": \"running\"") != std::wstring::npos;
+  } catch (...) {
+    // Anisette status is supplemental. It must never make a healthy local
+    // backend unavailable to features that do not use Apple authentication.
+  }
   return result;
 }
 
@@ -149,7 +155,6 @@ void BackendManager::Restart() {
 }
 
 bool BackendManager::IsHealthy() const {
-  std::scoped_lock lock(m_mutex);
   try {
     auto response = Get(L"/health");
     return response.find(L"\"status\":\"ok\"") != std::wstring::npos ||
@@ -196,12 +201,10 @@ bool BackendManager::StartProcess(std::filesystem::path const &executable,
 }
 
 std::wstring BackendManager::Get(std::wstring const &path) const {
-  std::scoped_lock lock(m_mutex);
   return Request(L"GET", path, L"");
 }
 std::wstring BackendManager::Post(std::wstring const &path,
                                   std::wstring const &body) const {
-  std::scoped_lock lock(m_mutex);
   return Request(L"POST", path, body);
 }
 
