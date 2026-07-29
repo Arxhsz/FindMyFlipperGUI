@@ -23,7 +23,9 @@
                           HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto"
                           VerticalScrollMode="Auto">
-            <Grid MaxWidth="720" HorizontalAlignment="Stretch" Margin="20,8,20,16">
+            <Grid x:Name="OnboardingViewport">
+            <Grid x:Name="OnboardingContentColumn" MaxWidth="720"
+                  HorizontalAlignment="Center" Margin="20,8,20,16">
                 <Grid x:Name="WelcomeStep">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="22">
                         <TextBlock Text="Welcome to FindMyFlipper" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" />
@@ -139,6 +141,7 @@
                         <InfoBar x:Name="DiagnosticInfo" IsOpen="False" IsClosable="False" />
                     </StackPanel>
                 </Grid>
+            </Grid>
             </Grid>
             </ScrollViewer>
 

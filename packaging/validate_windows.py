@@ -44,6 +44,9 @@ def main() -> None:
     require("App.xaml.g.cpp" not in xaml_cpp, "Invalid generated App include is present")
     require('HorizontalContentAlignment="Stretch"' in xaml,
             "Onboarding ScrollViewer does not center its constrained content")
+    require('x:Name="OnboardingContentColumn"' in xaml and
+            'HorizontalAlignment="Center"' in xaml,
+            "Onboarding content column is not explicitly centered")
     require("WM_GETMINMAXINFO" in xaml_cpp and
             "AdjustWindowRectExForDpi" in xaml_cpp,
             "Native minimum client-size enforcement is missing")

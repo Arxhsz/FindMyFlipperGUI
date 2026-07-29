@@ -16,7 +16,7 @@ The Windows app is a native C++20/C++/WinRT and WinUI 3 application. It uses Win
 | --- | --- |
 | ![Windows dashboard](IMG/windows-dashboard-v21-clean.jpg) | ![Windows reports](IMG/windows-reports-v21-clean.jpg) |
 
-![Windows onboarding](IMG/windows-onboarding-v24-clean.jpg)
+![Windows onboarding](IMG/windows-onboarding-v25-clean.jpg)
 
 The Windows screenshots were captured from the compiled native application in its isolated demo mode. All displayed names, identifiers, locations, and reports are fictional.
 
@@ -41,7 +41,7 @@ Set-ExecutionPolicy -Scope Process Bypass -Force
 .\packaging\package_windows.ps1 -Platform x64
 ```
 
-The current native source revision is `windows-native-build-fix-24`. Windows-specific implementation and QA notes are in [`WINDOWS/FindMyFlipperWindows`](WINDOWS/FindMyFlipperWindows).
+The current native source revision is `windows-native-build-fix-25`. Windows-specific implementation and QA notes are in [`WINDOWS/FindMyFlipperWindows`](WINDOWS/FindMyFlipperWindows).
 
 ## macOS app
 
