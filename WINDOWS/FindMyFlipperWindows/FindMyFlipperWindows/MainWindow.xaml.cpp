@@ -18,6 +18,24 @@ using namespace FindMyFlipper::Models;
 using FindMyFlipper::Services::CredentialService;
 
 namespace {
+struct ResumeOnDispatcher {
+  Microsoft::UI::Dispatching::DispatcherQueue queue{nullptr};
+
+  bool await_ready() const noexcept {
+    return queue && queue.HasThreadAccess();
+  }
+
+  bool await_suspend(std::coroutine_handle<> continuation) const {
+    if (!queue)
+      throw hresult_error(E_HANDLE, L"The UI dispatcher is unavailable.");
+    if (!queue.TryEnqueue([continuation]() noexcept { continuation.resume(); }))
+      throw hresult_error(E_ABORT, L"The UI dispatcher is shutting down.");
+    return true;
+  }
+
+  void await_resume() const noexcept {}
+};
+
 winrt::Windows::UI::Color HexColor(std::wstring value) {
   if (!value.empty() && value.front() == L'#')
     value.erase(value.begin());
@@ -419,7 +437,8 @@ MainWindow::~MainWindow() {
 }
 
 fire_and_forget MainWindow::InitializeServices() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   if (m_demoMode) {
     m_backendReady = true;
     m_anisetteReady = true;
@@ -435,6 +454,18 @@ fire_and_forget MainWindow::InitializeServices() {
   try {
     co_await resume_background();
     auto health = m_backend.EnsureServices();
+    std::wstring authStatus;
+    if (health.backendReady) {
+      try {
+        authStatus = m_backend.Post(L"/auth/status", L"{}");
+      } catch (std::exception const &error) {
+        Trace(L"Apple status request failed: " +
+              std::wstring(winrt::to_hstring(error.what())));
+      } catch (hresult_error const &error) {
+        Trace(L"Apple status request failed: " +
+              std::wstring(error.message()));
+      }
+    }
     co_await uiThread;
     if (m_closing)
       co_return;
@@ -448,9 +479,9 @@ fire_and_forget MainWindow::InitializeServices() {
                                       : L"Local backend   Offline");
     SettingsBackendStatus().Text(health.backendReady ? L"Local backend: Running"
                                                      : L"Local backend: Offline");
-    if (health.backendReady) {
+    if (health.backendReady && !authStatus.empty()) {
       try {
-        auto status = JsonObject::Parse(m_backend.Post(L"/auth/status", L"{}"));
+        auto status = JsonObject::Parse(authStatus);
         m_appleConnected = status.GetNamedBoolean(L"connected", false);
         SettingsAppleStatus().Text(m_appleConnected
                                        ? L"Find My reports: Connected"
@@ -474,7 +505,7 @@ fire_and_forget MainWindow::InitializeServices() {
   } catch (hresult_error const &error) {
     auto message = std::wstring(error.message());
     Trace(L"Service initialization WinRT failure: " + message);
-    auto weak = get_weak();
+    auto weak = lifetime->get_weak();
     m_dispatcher.TryEnqueue([weak, message] {
       if (auto self = weak.get(); self && !self->m_closing) {
         self->m_backendReady = false;
@@ -485,7 +516,7 @@ fire_and_forget MainWindow::InitializeServices() {
   } catch (std::exception const &error) {
     Trace(L"Service initialization C++ failure: " +
           std::wstring(winrt::to_hstring(error.what())));
-    auto weak = get_weak();
+    auto weak = lifetime->get_weak();
     m_dispatcher.TryEnqueue([weak] {
       if (auto self = weak.get(); self && !self->m_closing) {
         self->m_backendReady = false;
@@ -495,7 +526,7 @@ fire_and_forget MainWindow::InitializeServices() {
     });
   } catch (...) {
     Trace(L"Service initialization unknown failure.");
-    auto weak = get_weak();
+    auto weak = lifetime->get_weak();
     m_dispatcher.TryEnqueue([weak] {
       if (auto self = weak.get(); self && !self->m_closing) {
         self->m_backendReady = false;
@@ -566,7 +597,8 @@ void MainWindow::ImportFlipperKeys_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::ImportKeysFromFlipper() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   m_importFlipperKeysButton.IsEnabled(false);
   KeysInfo().Severity(InfoBarSeverity::Informational);
   KeysInfo().Message(L"Reading .keys from /ext/apps_data/findmy over USB...");
@@ -700,7 +732,8 @@ void MainWindow::GenerateKeys_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::GenerateKeys() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   GenerateKeysButton().IsEnabled(false);
   KeysInfo().Severity(InfoBarSeverity::Informational);
   KeysInfo().Message(L"Generating a new Find My identity locally...");
@@ -767,7 +800,8 @@ void MainWindow::PrepareFlipper_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::PrepareFlipper() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   PrepareFlipperButton().IsEnabled(false);
   FlipperUsbStatus().Text(L"Checking for a USB-connected Flipper...");
   co_await resume_background();
@@ -804,7 +838,8 @@ void MainWindow::CopyKeysToFlipper_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::CopyKeysToFlipper() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   if (m_keyRawContent.empty()) {
     auto const key = m_store.Key();
     auto privateKey = CredentialService::LoadPrivateKey(key.id);
@@ -871,7 +906,8 @@ fire_and_forget MainWindow::ConfirmRefreshFlipperDetails() {
 }
 
 fire_and_forget MainWindow::RefreshFlipperDetails() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   m_refreshFlipperButton.IsEnabled(false);
   m_flipperUsbDetail.Text(
       L"Reading /ext/apps_data/findmy through the Flipper serial CLI...");
@@ -929,7 +965,8 @@ void MainWindow::ConnectApple_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::ConnectApple() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   ConnectAppleButton().IsEnabled(false);
   AppleProgress().IsActive(true);
   auto username = std::wstring(AppleIdBox().Text());
@@ -1506,7 +1543,8 @@ void MainWindow::RefreshReports_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::RefreshReports() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   if (m_demoMode) {
     UpdateProfileUI();
     UpdateMap();
@@ -1928,7 +1966,8 @@ void MainWindow::MarkerPicker_SelectionChanged(
 }
 
 fire_and_forget MainWindow::RefreshServiceStatus() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   if (m_demoMode)
     co_return;
   if (m_closing || m_servicePollBusy.exchange(true))
@@ -1984,7 +2023,8 @@ void MainWindow::RestartBackend_Click(IInspectable const &,
 }
 
 fire_and_forget MainWindow::RestartBackend() {
-  apartment_context uiThread;
+  auto lifetime = get_strong();
+  ResumeOnDispatcher uiThread{m_dispatcher};
   if (m_servicePollBusy.exchange(true))
     co_return;
   SettingsBackendStatus().Text(L"Local backend: Restarting");
