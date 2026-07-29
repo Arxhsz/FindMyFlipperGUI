@@ -1,6 +1,6 @@
 # FindMyFlipper for Windows
 
-Source revision: `windows-native-build-fix-23`
+Source revision: `windows-native-build-fix-24`
 
 Run the repeatable source/build/package validation after Debug, Release, and
 packaging complete:

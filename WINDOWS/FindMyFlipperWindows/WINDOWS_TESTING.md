@@ -34,7 +34,7 @@ is not exposed, clone the repository, then run:
 11. Extract `FindMyFlipperPortable.zip` into a clean folder and launch it.
 12. Install and uninstall `FindMyFlipperSetup.exe`.
 
-## Results for windows-native-build-fix-23
+## Results for windows-native-build-fix-24
 
 - Historical map input is normalized for legacy millisecond timestamps and
   invalid coordinates. When a freshly loaded identity only has older reports,
@@ -129,7 +129,7 @@ the v145 toolset, and Windows SDK 10.0.26100.0:
 - Backend tests: 31 passed. Both native x64 configurations built with zero
   errors. Portable ZIP and Inno Setup installer were produced and validated.
 
-Not represented as passing for fix-23: a new live Apple credential/2FA
+Not represented as passing for fix-24: a new live Apple credential/2FA
 submission, real Find My report retrieval, or physical Flipper USB/BLE/GATT
 operations. Those require the account and hardware to be available during the
 final clean test and are not inferred from simulated data.
