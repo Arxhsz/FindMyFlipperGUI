@@ -26,6 +26,7 @@ def main() -> None:
     ET.parse(PROJECT / "App.xaml")
 
     project = project_file.read_text(encoding="utf-8")
+    xaml = xaml_file.read_text(encoding="utf-8")
     xaml_cpp = (PROJECT / "MainWindow.xaml.cpp").read_text(encoding="utf-8")
     profile_cpp = (PROJECT / "Services/ProfileStore.cpp").read_text(encoding="utf-8")
     bluetooth_cpp = (PROJECT / "Services/BluetoothManager.cpp").read_text(encoding="utf-8")
@@ -41,6 +42,11 @@ def main() -> None:
         require(marker in project, f"Missing project marker: {marker}")
     require("/await" not in project, "Obsolete /await option is present")
     require("App.xaml.g.cpp" not in xaml_cpp, "Invalid generated App include is present")
+    require('HorizontalContentAlignment="Stretch"' in xaml,
+            "Onboarding ScrollViewer does not center its constrained content")
+    require("WM_GETMINMAXINFO" in xaml_cpp and
+            "AdjustWindowRectExForDpi" in xaml_cpp,
+            "Native minimum client-size enforcement is missing")
 
     for relative in (
         "App.xaml",

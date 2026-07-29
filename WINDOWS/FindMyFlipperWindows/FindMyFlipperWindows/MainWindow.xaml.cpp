@@ -4,6 +4,7 @@
 #include "MainWindow.g.cpp"
 #endif
 #include "Services/CredentialService.h"
+#include <commctrl.h>
 
 using namespace winrt;
 using namespace Microsoft::UI;
@@ -18,6 +19,35 @@ using namespace FindMyFlipper::Models;
 using FindMyFlipper::Services::CredentialService;
 
 namespace {
+#pragma comment(lib, "comctl32.lib")
+
+constexpr UINT_PTR MinimumWindowSizeSubclassId = 1;
+
+LRESULT CALLBACK MinimumWindowSizeSubclassProc(HWND window, UINT message,
+                                               WPARAM wParam, LPARAM lParam,
+                                               UINT_PTR subclassId,
+                                               DWORD_PTR) {
+  if (message == WM_GETMINMAXINFO) {
+    auto const dpi = GetDpiForWindow(window);
+    RECT clientRect{
+        0, 0, MulDiv(700, static_cast<int>(dpi), 96),
+        MulDiv(520, static_cast<int>(dpi), 96)};
+    auto const style = static_cast<DWORD>(GetWindowLongPtrW(window, GWL_STYLE));
+    auto const extendedStyle =
+        static_cast<DWORD>(GetWindowLongPtrW(window, GWL_EXSTYLE));
+    if (AdjustWindowRectExForDpi(&clientRect, style, GetMenu(window) != nullptr,
+                                 extendedStyle, dpi)) {
+      auto minMax = reinterpret_cast<MINMAXINFO *>(lParam);
+      minMax->ptMinTrackSize.x = clientRect.right - clientRect.left;
+      minMax->ptMinTrackSize.y = clientRect.bottom - clientRect.top;
+      return 0;
+    }
+  } else if (message == WM_NCDESTROY) {
+    RemoveWindowSubclass(window, MinimumWindowSizeSubclassProc, subclassId);
+  }
+  return DefSubclassProc(window, message, wParam, lParam);
+}
+
 struct ResumeOnDispatcher {
   Microsoft::UI::Dispatching::DispatcherQueue queue{nullptr};
 
@@ -108,6 +138,7 @@ bool DemoModeEnabled() noexcept {
                                  static_cast<DWORD>(std::size(value))) > 0 &&
          value[0] == L'1';
 }
+
 } // namespace
 
 namespace winrt::FindMyFlipperWindows::implementation {
@@ -143,6 +174,8 @@ void MainWindow::InitializeAfterXaml() {
   auto windowNative = this->try_as<::IWindowNative>();
   HWND window{};
   check_hresult(windowNative->get_WindowHandle(&window));
+  check_bool(SetWindowSubclass(window, MinimumWindowSizeSubclassProc,
+                               MinimumWindowSizeSubclassId, 0));
   auto module = GetModuleHandleW(nullptr);
   auto largeIcon = reinterpret_cast<HICON>(LoadImageW(
       module, MAKEINTRESOURCEW(101), IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR));

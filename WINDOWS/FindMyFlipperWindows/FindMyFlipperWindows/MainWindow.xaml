@@ -18,8 +18,11 @@
             <TextBlock x:Name="StepLabel" Text="Step 1 of 5" HorizontalAlignment="Center" VerticalAlignment="Center"
                        Foreground="{StaticResource SecondaryTextBrush}" FontWeight="SemiBold" />
 
-            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
+            <ScrollViewer Grid.Row="1"
+                          HorizontalContentAlignment="Stretch"
+                          HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          VerticalScrollMode="Auto">
             <Grid MaxWidth="720" HorizontalAlignment="Stretch" Margin="20,8,20,16">
                 <Grid x:Name="WelcomeStep">
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="22">
@@ -69,18 +72,18 @@
                 </Grid>
 
                 <Grid x:Name="AppleStep" Visibility="Collapsed">
-                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="13">
-                        <Grid Width="72" Height="60">
-                            <FontIcon Glyph="&#xE72E;" FontSize="46" Foreground="{StaticResource SecondaryTextBrush}"
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="560" Spacing="10">
+                        <Grid Width="68" Height="52">
+                            <FontIcon Glyph="&#xE72E;" FontSize="42" Foreground="{StaticResource SecondaryTextBrush}"
                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
-                        <TextBlock Text="Connect Apple Access" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="Connect Apple Access" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" />
                         <TextBlock Text="Sign in to request encrypted Find My reports for your imported key. Credentials stay inside the local sign-in flow."
                                    TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource SecondaryTextBrush}" />
                         <TextBlock Text="FindMyFlipper starts a local anisette service through Docker Desktop. Your Apple password and two-factor code are never saved."
                                    TextWrapping="Wrap" TextAlignment="Center" Foreground="{StaticResource SecondaryTextBrush}" FontSize="12" />
                         <Border Style="{StaticResource CardStyle}">
-                            <StackPanel Spacing="12">
+                            <StackPanel Spacing="10">
                                 <TextBox x:Name="AppleIdBox" Header="Apple ID" PlaceholderText="name@icloud.com" InputScope="EmailNameOrAddress" />
                                 <PasswordBox x:Name="ApplePasswordBox" Header="Password" PasswordRevealMode="Peek" />
                                 <ComboBox x:Name="SecondFactorBox" Header="Two-factor delivery" SelectedIndex="0" HorizontalAlignment="Stretch">
