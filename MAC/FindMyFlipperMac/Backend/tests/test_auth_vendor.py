@@ -90,3 +90,15 @@ def test_auth_connect_waits_for_second_factor_code(monkeypatch):
         ("user@example.com", "secret-password", "trusted_device"),
     ]
     assert manager._pending_second_factor is None
+
+
+def test_second_factor_headers_use_vendor_akd_client_identity():
+    module = types.SimpleNamespace(
+        GSA_CLIENT_INFO="client-info-with-com.apple.akd/1.0",
+        generate_anisette_headers=lambda: {},
+    )
+
+    headers = AuthManager._second_factor_headers(module, "123", "token")
+
+    assert headers["X-Mme-Client-Info"] == module.GSA_CLIENT_INFO
+    assert "com.apple.dt.Xcode" not in headers["X-Mme-Client-Info"]

@@ -1,6 +1,8 @@
 from getpass import getpass
 import plistlib as plist
 import json
+import logging
+import time
 import uuid
 import pbkdf2
 import requests
@@ -28,6 +30,11 @@ import urllib3
 # urllib3.disable_warnings()
 
 ANISETTE_URL = 'http://localhost:6969'  # https://github.com/Dadoum/anisette-v3-server
+GSA_CLIENT_INFO = '<MacBookPro18,3> <Mac OS X;13.4.1;22F8> <com.apple.AOSKit/282 (com.apple.akd/1.0)>'
+GSA_RETRY_STATUS_CODES = {502, 503, 504}
+GSA_MAX_ATTEMPTS = 3
+GSA_RETRY_BACKOFF_SECONDS = 0.5
+logger = logging.getLogger(__name__)
 
 
 def icloud_login_mobileme(username='', password='', second_factor='sms'):
@@ -115,7 +122,8 @@ def gsa_authenticate(username, password, second_factor='sms'):
             sms_second_factor(spd["adsid"], spd["GsIdmsToken"])
         elif second_factor == 'trusted_device':
             trusted_second_factor(spd["adsid"], spd["GsIdmsToken"])
-        return gsa_authenticate(username, password)
+        # Re-authenticate using the same 2FA method selected by the caller.
+        return gsa_authenticate(username, password, second_factor)
     elif "au" in r["Status"]:
         print(f"Unknown auth value {r['Status']['au']}")
         return
@@ -134,18 +142,49 @@ def gsa_authenticated_request(parameters):
         "Content-Type": "text/x-xml-plist",
         "Accept": "*/*",
         "User-Agent": "akd/1.0 CFNetwork/978.0.7 Darwin/18.7.0",
-        "X-MMe-Client-Info": '<MacBookPro18,3> <Mac OS X;13.4.1;22F8> <com.apple.AOSKit/282 (com.apple.dt.Xcode/3594.4.19)>'
+        # Apple started rejecting the legacy Xcode client identifier at the
+        # GrandSlam edge with a 190-byte HTML 503 response in September 2026.
+        "X-MMe-Client-Info": GSA_CLIENT_INFO,
     }
 
-    resp = requests.post(
-        "https://gsa.apple.com/grandslam/GsService2",
-        headers=headers,
-        data=plist.dumps(body),
-        verify=False,
-        timeout=5,
-    )
+    request_body = plist.dumps(body)
+    for attempt in range(GSA_MAX_ATTEMPTS):
+        # requests.post() creates a fresh short-lived Session, so retries do
+        # not remain pinned to the same failing Apple edge connection.
+        resp = requests.post(
+            "https://gsa.apple.com/grandslam/GsService2",
+            headers=headers,
+            data=request_body,
+            verify=False,
+            timeout=5,
+        )
+        if resp.status_code not in GSA_RETRY_STATUS_CODES or attempt == GSA_MAX_ATTEMPTS - 1:
+            break
 
-    return plist.loads(resp.content)["Response"]
+        delay = GSA_RETRY_BACKOFF_SECONDS * (2 ** attempt)
+        logger.warning(
+            "Apple GSA returned HTTP %s; retrying in %.1f seconds (%s/%s)",
+            resp.status_code,
+            delay,
+            attempt + 1,
+            GSA_MAX_ATTEMPTS - 1,
+        )
+        time.sleep(delay)
+
+    try:
+        parsed_response = plist.loads(resp.content)
+    except (plist.InvalidFileException, TypeError, ValueError) as exc:
+        content_type = resp.headers.get("Content-Type", "<missing>")
+        content_preview = resp.content[:1000]
+        message = (
+            "Apple GSA returned an invalid plist response: "
+            f"HTTP {resp.status_code}; Content-Type: {content_type}; "
+            f"first {len(content_preview)} bytes: {content_preview!r}"
+        )
+        logger.error(message)
+        raise RuntimeError(message) from exc
+
+    return parsed_response["Response"]
 
 
 def generate_cpd():
@@ -172,7 +211,7 @@ def generate_anisette_headers():
         device = pyprovision.Device("./anisette/device.json")
         if not device.initialized:
             # Pretend to be a MacBook Pro
-            device.server_friendly_description = "<MacBookPro13,2> <macOS;13.1;22C65> <com.apple.AuthKit/1 (com.apple.dt.Xcode/3594.4.19)>"
+            device.server_friendly_description = "<MacBookPro13,2> <macOS;13.1;22C65> <com.apple.AuthKit/1 (com.apple.akd/1.0)>"
             device.unique_device_identifier = str(uuid.uuid4()).upper()
             device.adi_identifier = secrets.token_hex(8).lower()
             device.local_user_uuid = secrets.token_hex(32).upper()
@@ -189,7 +228,27 @@ def generate_anisette_headers():
     except ImportError:
         print(f'pyprovision is not installed, querying {ANISETTE_URL} for an anisette server')
         h = json.loads(requests.get(ANISETTE_URL, timeout=5).text)
-        a = {"X-Apple-I-MD": h["X-Apple-I-MD"], "X-Apple-I-MD-M": h["X-Apple-I-MD-M"]}
+        # Keep the complete device identity returned by anisette-v3. Its machine
+        # identifier is provisioned together with the device ID, local-user ID,
+        # serial number, and metadata below. Mixing it with locally generated
+        # UUIDs prevents Apple from trusting the device after successful 2FA.
+        return {
+            "X-Apple-I-MD": h["X-Apple-I-MD"],
+            "X-Apple-I-MD-M": h["X-Apple-I-MD-M"],
+            "X-Apple-I-MD-RINFO": h.get("X-Apple-I-MD-RINFO", "17106176"),
+            "X-Apple-I-MD-LU": h.get("X-Apple-I-MD-LU", ""),
+            "X-Mme-Device-Id": h.get("X-Mme-Device-Id", ""),
+            "X-Apple-I-SRL-NO": h.get("X-Apple-I-SRL-NO", "0"),
+            "X-Apple-I-Client-Time": h.get(
+                "X-Apple-I-Client-Time",
+                datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            ),
+            "X-Apple-I-TimeZone": h.get("X-Apple-I-TimeZone", "UTC"),
+            "loc": locale.getdefaultlocale()[0] or "en_US",
+            "X-Apple-Locale": h.get(
+                "X-Apple-Locale", locale.getdefaultlocale()[0] or "en_US"
+            ),
+        }
     a.update(generate_meta_headers(user_id=USER_ID, device_id=DEVICE_ID))
     return a
 
@@ -246,7 +305,7 @@ def trusted_second_factor(dsid, idms_token):
         "X-Apple-Identity-Token": identity_token,
         "X-Apple-App-Info": "com.apple.gs.xcode.auth",
         "X-Xcode-Version": "11.2 (11B41)",
-        "X-Mme-Client-Info": '<MacBookPro18,3> <Mac OS X;13.4.1;22F8> <com.apple.AOSKit/282 (com.apple.dt.Xcode/3594.4.19)>'
+        "X-Mme-Client-Info": GSA_CLIENT_INFO,
     }
 
     headers.update(generate_anisette_headers())
@@ -290,7 +349,7 @@ def sms_second_factor(dsid, idms_token):
         "X-Apple-Identity-Token": identity_token,
         "X-Apple-App-Info": "com.apple.gs.xcode.auth",
         "X-Xcode-Version": "11.2 (11B41)",
-        "X-Mme-Client-Info": '<MacBookPro18,3> <Mac OS X;13.4.1;22F8> <com.apple.AOSKit/282 (com.apple.dt.Xcode/3594.4.19)>'
+        "X-Mme-Client-Info": GSA_CLIENT_INFO,
     }
 
     headers.update(generate_anisette_headers())
