@@ -466,26 +466,58 @@ struct AppleAccessView: View {
                 .multilineTextAlignment(.center)
 
             VStack(spacing: 10) {
-                TextField("Apple ID", text: $appleID)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.username)
-                    .autocorrectionDisabled()
-                    .focused($focusedAuthField, equals: .appleID)
-                SecureField("Password", text: $password)
-                    .textFieldStyle(.roundedBorder)
-                    .textContentType(.password)
-                    .focused($focusedAuthField, equals: .password)
-                Picker("2FA", selection: $secondFactor) {
-                    Text("Trusted Device").tag("trusted_device")
-                    Text("SMS").tag("sms")
+                ZStack(alignment: .leading) {
+                    TextField("", text: $appleID)
+                        .appleAuthInputStyle(theme: theme)
+                        .textContentType(.username)
+                        .autocorrectionDisabled()
+                        .focused($focusedAuthField, equals: .appleID)
+                        .accessibilityLabel("Apple ID")
+                    if appleID.isEmpty {
+                        appleAuthPlaceholder("Apple ID")
+                    }
                 }
-                .pickerStyle(.segmented)
+                ZStack(alignment: .leading) {
+                    SecureField("", text: $password)
+                        .appleAuthInputStyle(theme: theme)
+                        .textContentType(.password)
+                        .focused($focusedAuthField, equals: .password)
+                        .accessibilityLabel("Password")
+                    if password.isEmpty {
+                        appleAuthPlaceholder("Password")
+                    }
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("2FA method")
+                        .font(.caption)
+                        .foregroundStyle(theme.textSecondary)
+
+                    HStack(spacing: 4) {
+                        secondFactorButton("Trusted Device", value: "trusted_device")
+                        secondFactorButton("SMS", value: "sms")
+                    }
+                    .padding(3)
+                    .background(
+                        theme.cardBackground,
+                        in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .stroke(theme.cardBorder, lineWidth: 1)
+                    }
+                }
 
                 if needsTwoFactorCode {
-                    TextField("Two-factor code", text: $twoFactorCode)
-                        .textFieldStyle(.roundedBorder)
-                        .textContentType(.oneTimeCode)
-                        .focused($focusedAuthField, equals: .code)
+                    ZStack(alignment: .leading) {
+                        TextField("", text: $twoFactorCode)
+                            .appleAuthInputStyle(theme: theme)
+                            .textContentType(.oneTimeCode)
+                            .focused($focusedAuthField, equals: .code)
+                            .accessibilityLabel("Two-factor code")
+                        if twoFactorCode.isEmpty {
+                            appleAuthPlaceholder("Two-factor code")
+                        }
+                    }
                     Text("Keep this window open. Enter the latest code Apple sent, then verify.")
                         .font(.caption2)
                         .foregroundStyle(theme.textSecondary)
@@ -644,6 +676,35 @@ struct AppleAccessView: View {
         }
     }
 
+    private func secondFactorButton(_ title: String, value: String) -> some View {
+        let isSelected = secondFactor == value
+
+        return Button {
+            secondFactor = value
+        } label: {
+            Text(title)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(isSelected ? Color.white : theme.textPrimary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 26)
+                .background(
+                    isSelected ? theme.primaryOrange : Color.clear,
+                    in: RoundedRectangle(cornerRadius: 4, style: .continuous)
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+    }
+
+    private func appleAuthPlaceholder(_ title: String) -> some View {
+        Text(title)
+            .font(.body)
+            .foregroundStyle(theme.textSecondary)
+            .padding(.horizontal, 10)
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+    }
+
     private func checkExistingAccess() async {
         await appState.backendManager.startBackend()
         do {
@@ -655,6 +716,33 @@ struct AppleAccessView: View {
         } catch {
             await MainActor.run { isCheckingExistingAccess = false }
         }
+    }
+}
+
+private struct AppleAuthInputStyle: ViewModifier {
+    let theme: ThemeColors
+
+    func body(content: Content) -> some View {
+        content
+            .textFieldStyle(.plain)
+            .foregroundColor(theme.textPrimary)
+            .tint(theme.primaryOrange)
+            .padding(.horizontal, 10)
+            .frame(height: 32)
+            .background(
+                theme.cardBackground,
+                in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(theme.cardBorder, lineWidth: 1)
+            }
+    }
+}
+
+private extension View {
+    func appleAuthInputStyle(theme: ThemeColors) -> some View {
+        modifier(AppleAuthInputStyle(theme: theme))
     }
 }
 

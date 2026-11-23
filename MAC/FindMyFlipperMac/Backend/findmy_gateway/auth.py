@@ -245,7 +245,7 @@ class AuthManager:
             "X-Apple-Identity-Token": identity_token,
             "X-Apple-App-Info": "com.apple.gs.xcode.auth",
             "X-Xcode-Version": "11.2 (11B41)",
-            "X-Mme-Client-Info": "<MacBookPro18,3> <Mac OS X;13.4.1;22F8> <com.apple.AOSKit/282 (com.apple.dt.Xcode/3594.4.19)>",
+            "X-Mme-Client-Info": module.GSA_CLIENT_INFO,
         }
         headers.update(module.generate_anisette_headers())
         return headers
